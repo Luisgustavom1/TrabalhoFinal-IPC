@@ -1,9 +1,30 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 struct a_definir{
 	//inserir código aqui
 };
+
+int autenticacao() {
+  // Solicita que o usuário digite uma senha até ele acertar. Quando ele acerta, é retornado 0; quando ele opta por sair, é retornado 1.
+  // Não tem criptografia nenhuma, é só para demonstrar
+  char senha[10] = {};
+  printf("Para executar esse comando, é necessário informar a senha de administração.\n");
+  
+  while (strcmp(senha, "senha") != 0) {
+  printf("Digite a senha => ");
+  scanf("%s", senha); printf("\n");
+  if (strcmp(senha, "sair") == 0) {
+    printf("A operação foi cancelada\n");
+    return 1;
+  }
+  if (strcmp(senha, "senha") != 0)
+    printf("\nSenha incorreta, para cancelar a operação, digite \"sair\" em vez da senha\n");
+  }
+  
+  return 0;
+}
 
 void cadastro(struct a_definir T[]){
 	//inserir código aqui
@@ -19,32 +40,53 @@ void mostra1(struct a_definir T[]){
 
 void eventos() {
   // Os eventos serão guardados em um arquivo para melhor organização
-  FILE *eventos;
-  eventos = fopen("eventos", "r");
+  FILE *eventos = fopen("eventos", "r");
   if (eventos == NULL) { // Caso o arquivo "eventos" não exista, criá-lo
     printf("Nenhum evento foi encontrado\n");
-    //fclose(eventos);
     eventos = fopen("eventos", "w");
-  } else
-    printf("O arquivo foi encontrado\n");
+  }
+  char eventos_contents[300];
+  while (fgets(eventos_contents, 300, eventos) != NULL) // Imprimir todas as linhas do arquivo eventos
+    printf("%s", eventos_contents);
 
-  return;
-  
-  // Daqui pra baixo eu tô testando os ngc e é pura anarquia
-  int input_max = 200;
-  char eventctl_register_text[input_max];
-  while (fgets(eventctl_register_text, input_max, eventos) != NULL) {
-    printf("%s\n", eventctl_register_text);
+  // Menu de opções
+  int opcao;
+  while (1) {
+    printf("\nComandos:\n");
+    printf("1 - Criar um evento\n");
+    printf("2 - Remover um evento\n");
+    printf("3 - Remover todos os eventos\n");
+    printf("9 - Voltar\n");
+    printf("Digite o número da opção => ");
+    scanf("%d", &opcao);
+    printf("\n");
+    if (opcao == 9) {
+      return;
+      fclose(eventos);
+    }
+    if (opcao == 1) {
+      if (autenticacao() == 0) {
+	fclose(eventos); eventos = fopen("eventos", "a");
+	char eventctl_register_text[300];
+        printf("Digite os eventos a serem adicionados, separando-os por uma quebra de linha\nAo concluir, digite \"\\sair\"\n");
+	while (strcmp(eventctl_register_text, "\\sair\n") != 0) {
+	  fgets(eventctl_register_text, 300, stdin);
+	  if (strcmp(eventctl_register_text, "\\sair\n") != 0) // Impedir que a string "\sair" seja escrita no arquivo
+	    fputs(eventctl_register_text, eventos); // Vai lendo e já vai salvando no arquivo
+	}
+	fclose(eventos); eventos = fopen("eventos", "r");
+	printf("Os eventos foram gravados\n");
+      }
+    }
   }
 
-  //#########################################
-  int x, y;
-  fprintf(eventos, "Teste");
-  fscanf(eventos, "%d %d", &x, &y);
-  fclose(eventos);
+  exit(0); //Testing
+  return;
 }
 
 void menu(){
+  eventos(); //Testing
+  
 	int opcao;
 	struct a_definir P[30];
 
