@@ -30,4 +30,4 @@ Links:
   - https://www.codingame.com/playgrounds/24988/programacao-c/manipulando-arquivos-em-c-caracter
   - https://www.unicamp.br/fea/ortega/info/aula12.html
 
-oooooooooo
+
