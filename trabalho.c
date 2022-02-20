@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define TAMANHO_DO_BUFFER 256
+#define TAMANHO_BUFFER 256 // Verificar com o João se isso é considerado uma variável global e se poder ter no trabalho. (Dá para corrigir fácil se não puder)
 
 struct a_definir{
 	//inserir código aqui
@@ -17,12 +17,12 @@ int autenticacao() {
   while (strcmp(senha, "senha") != 0) {
     printf("Digite a senha => ");
     scanf("%s", senha); printf("\n");
-    if (strcmp(senha, "sair") == 0) {
+    if (strcmp(senha, "\\sair") == 0) {
       printf("A operação foi cancelada\n");
       return 1;
     }
     if (strcmp(senha, "senha") != 0)
-      printf("\nSenha incorreta, para cancelar a operação, digite \"sair\" em vez da senha\n");
+      printf("\nSenha incorreta, para cancelar a operação, digite \"\\sair\" em vez da senha\n");
   }
   
   return 0;
@@ -50,9 +50,9 @@ void eventos() {
   if (ftell(eventos) == 0) // Se o arquivo estiver vazio, imprimir a mensagem:
     printf("Nenhum evento foi encontrado\n");
 
-  char eventos_contents[TAMANHO_DO_BUFFER];
+  char eventos_contents[TAMANHO_BUFFER];
   rewind(eventos);
-  while (fgets(eventos_contents, TAMANHO_DO_BUFFER, eventos) != NULL) // Imprimir todas as linhas do arquivo eventos
+  while (fgets(eventos_contents, TAMANHO_BUFFER, eventos) != NULL) // Imprimir todas as linhas do arquivo eventos
     printf("%s", eventos_contents);
 
   // Menu de opções
@@ -74,72 +74,85 @@ void eventos() {
     
     if (opcao == 1) { // Adicionar um evento
       if (autenticacao() == 0) {
-	fclose(eventos); eventos = fopen("eventos", "a");
-	char eventctl_register_text[TAMANHO_DO_BUFFER];
-        eventctl_register_text[0] = '0'; // O while abaixo não executa se a string já for igual a "\sair". Esta linha corrige isso mudando 1 caractere da string
+        fclose(eventos); eventos = fopen("eventos", "a");
+        char eventreg_text[TAMANHO_BUFFER];
+        eventreg_text[0] = '0'; // O while abaixo não executa se a string já for igual a "\sair". Esta linha corrige isso mudando 1 caractere da string
         printf("Digite os eventos a serem adicionados, separando-os por uma quebra de linha\nAo concluir, digite \"\\sair\"\n");
         
-	while (strcmp(eventctl_register_text, "\\sair\n") != 0) {
+        while (strcmp(eventreg_text, "\\sair\n") != 0) {
           setbuf(stdin, NULL);
-	  fgets(eventctl_register_text, TAMANHO_DO_BUFFER, stdin);
-	  if (strcmp(eventctl_register_text, "\\sair\n") != 0) // Impedir que a string "\sair" seja escrita no arquivo
-	    fputs(eventctl_register_text, eventos); // Vai lendo e já vai salvando no arquivo
-	}
-	fclose(eventos); eventos = fopen("eventos", "r");
+          fgets(eventreg_text, TAMANHO_BUFFER, stdin);
+          if (strcmp(eventreg_text, "\\sair\n") != 0) // Impedir que a string "\sair" seja escrita no arquivo
+            fputs(eventreg_text, eventos); // Vai lendo e já vai salvando no arquivo
+        }
+        fclose(eventos); eventos = fopen("eventos", "r");
         printf("Os eventos foram gravados\n");
       }
     }
 
     if (opcao == 2) { // Remover um evento
-      char deletando[TAMANHO_DO_BUFFER * 16] = {'\0'}; // Funciona com até 16 linhas de eventos, só mudar o número para suportar mais linhas
-      int linha, linha_atual, i, c;
-      for (i=0; i < TAMANHO_DO_BUFFER*16; ++i)
-        deletando[i] = '\0';
-      linha_atual=i=c = 0;
+      if (autenticacao() == 0) {
+        char deletando[TAMANHO_BUFFER * 16] = {'\0'}; // Funciona com até 16 linhas de eventos, só mudar o número para suportar mais linhas
+        int linha_deletar, linha_atual, i, c;
+        for (i=0; i < TAMANHO_BUFFER*16; ++i)
+          deletando[i] = '\0';
+        linha_atual=i=c = 0;
 
-      rewind(eventos);
-      while (fgets(eventos_contents, TAMANHO_DO_BUFFER, eventos) != NULL) { // Imprimir todas as linhas com um número de referência na frente
-        printf("%d | %s", i, eventos_contents);
-        strcat(deletando, eventos_contents);
-        i++;
+        rewind(eventos);
+        while (fgets(eventos_contents, TAMANHO_BUFFER, eventos) != NULL) { // Imprimir todas as linhas com um número de referência na frente
+          printf("%d | %s", i, eventos_contents);
+          strcat(deletando, eventos_contents);
+          i++;
+        }
+        printf("\n");
+
+        printf("\nInsira o número do evento que será deletado => ");
+        linha_deletar=-1;
+        while (linha_deletar >= i || linha_deletar < 0) // Impedir que números fora do intervalo sejam escritos
+          scanf("%d", &linha_deletar);
+
+        fclose(eventos); eventos = fopen("eventos", "w"); fclose(eventos); eventos = fopen("eventos", "a"); // Tenho que testar se toda essa anarquia é necessária...
+
+        while (linha_atual < i) {
+          if (linha_atual != linha_deletar)
+            fprintf(eventos, "%c", deletando[c]);
+          if (deletando[c] == '\n')
+            linha_atual++;
+          c++;
+        }
+        fclose(eventos); eventos = fopen("eventos", "r");
       }
-      printf("\n");
+    }
 
-      printf("\nInsira o número do evento que será deletado => ");
-      linha=-1;
-      while (linha >= i || linha < 0) // Impedir que números fora do intervalo sejam escritos
-        scanf("%d", &linha);
-
-      fclose(eventos); eventos = fopen("eventos", "w"); fclose(eventos); eventos = fopen("eventos", "a"); // Tenho que testar se toda essa anarquia é necessária...
-
-      while (linha_atual < i) {
-        if (linha_atual != linha)
-          fprintf(eventos, "%c", deletando[c]);
-        if (deletando[c] == '\n')
-          linha_atual++;
-        c++;
-        // Só tem que fazer o código parar de executar no momento certo agora
+    if (opcao == 3) { // Remover todos os eventos
+      if (autenticacao() == 0) {
+        char confirm[3];
+        confirm[0] = '\0'; // Evitar que o while não seja executado na segunda vez que a opção é executada
+        printf("Tem certeza que deseja remover todos os eventos? (Esta ação é definitiva)\n");
+        while (strcmp(confirm, "sim") && strcmp(confirm, "nao")) {
+          printf("Digite \"sim\" ou \"nao\" => ");
+          scanf("%s", confirm);
+        }
+        if (strcmp(confirm, "sim") == 0) {
+          fclose(eventos); eventos = fopen("eventos", "w");
+          fclose(eventos); eventos = fopen("eventos", "r");
+        } else
+          printf("Operação cancelada\n");
       }
-
-      
-      fclose(eventos); eventos = fopen("eventos", "r");
     }
 
     if (opcao == 4) { // Recarregar eventos
       rewind(eventos);
-      while (fgets(eventos_contents, TAMANHO_DO_BUFFER, eventos) != NULL) // Imprimir todas as linhas do arquivo eventos
+      while (fgets(eventos_contents, TAMANHO_BUFFER, eventos) != NULL) // Imprimir todas as linhas do arquivo eventos
         printf("%s", eventos_contents);
     }
   }
 
   fclose(eventos);
-  exit(0); //Testing
   return;
 }
 
 void menu(){
-  eventos(); //Testing
-  
 	int opcao;
 	struct a_definir P[30];
 
