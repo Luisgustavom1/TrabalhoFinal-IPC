@@ -29,5 +29,4 @@ Links:
 
   - https://www.codingame.com/playgrounds/24988/programacao-c/manipulando-arquivos-em-c-caracter
   - https://www.unicamp.br/fea/ortega/info/aula12.html
-
-oooooooooo
+  - https://www.youtube.com/watch?v=eriDnpkh5kA (Da aula 81 p/frente persistência de dados)
