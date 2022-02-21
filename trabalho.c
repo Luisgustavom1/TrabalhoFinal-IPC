@@ -58,6 +58,8 @@ void eventos() {
   // Menu de opções
   int opcao;
   while (1) {
+    fclose(eventos); eventos = fopen("eventos", "r");
+    
     printf("\n\nComandos:\n");
     printf("1 - Criar um evento\n");
     printf("2 - Remover um evento\n");
@@ -68,11 +70,12 @@ void eventos() {
     scanf("%d", &opcao);
     printf("\n");
     if (opcao == 9) {
-      return;
       fclose(eventos);
+      return;
     }
     
     if (opcao == 1) { // Adicionar um evento
+      // O usuário ditará um evento por linha. Para que ele saia do modo de digitação, basta digitar "\sair".
       if (autenticacao() == 0) {
         fclose(eventos); eventos = fopen("eventos", "a");
         char eventreg_text[TAMANHO_BUFFER];
@@ -85,23 +88,23 @@ void eventos() {
           if (strcmp(eventreg_text, "\\sair\n") != 0) // Impedir que a string "\sair" seja escrita no arquivo
             fputs(eventreg_text, eventos); // Vai lendo e já vai salvando no arquivo
         }
-        fclose(eventos); eventos = fopen("eventos", "r");
         printf("Os eventos foram gravados\n");
       }
     }
 
     if (opcao == 2) { // Remover um evento
+      // Todos os eventos serão listados com um número de referência na frente. O usuário digtará um número e o evento correspondente será excluído
       if (autenticacao() == 0) {
-        char deletando[TAMANHO_BUFFER * 16] = {'\0'}; // Funciona com até 16 linhas de eventos, só mudar o número para suportar mais linhas
+        char arquivo_original[TAMANHO_BUFFER * 16] = {'\0'}; // Funciona com até 16 linhas de eventos, mude o número para suportar mais linhas
         int linha_deletar, linha_atual, i, c;
         for (i=0; i < TAMANHO_BUFFER*16; ++i)
-          deletando[i] = '\0';
+          arquivo_original[i] = '\0';
         linha_atual=i=c = 0;
 
         rewind(eventos);
         while (fgets(eventos_contents, TAMANHO_BUFFER, eventos) != NULL) { // Imprimir todas as linhas com um número de referência na frente
           printf("%d | %s", i, eventos_contents);
-          strcat(deletando, eventos_contents);
+          strcat(arquivo_original, eventos_contents); // Transferindo o conteúdo do arquivo para o vetor "arquivo_original"
           i++;
         }
         printf("\n");
@@ -114,20 +117,19 @@ void eventos() {
         fclose(eventos); eventos = fopen("eventos", "w"); fclose(eventos); eventos = fopen("eventos", "a"); // Tenho que testar se toda essa anarquia é necessária...
 
         while (linha_atual < i) {
-          if (linha_atual != linha_deletar)
-            fprintf(eventos, "%c", deletando[c]);
-          if (deletando[c] == '\n')
+          if (linha_atual != linha_deletar) // Se a linha atual for igual à linha que será deletada, nada será impresso
+            fprintf(eventos, "%c", arquivo_original[c]);
+          if (arquivo_original[c] == '\n')
             linha_atual++;
           c++;
         }
-        fclose(eventos); eventos = fopen("eventos", "r");
       }
     }
 
     if (opcao == 3) { // Remover todos os eventos
       if (autenticacao() == 0) {
         char confirm[3];
-        confirm[0] = '\0'; // Evitar que o while não seja executado na segunda vez que a opção é executada
+        confirm[0] = '\0'; // Evitar que o while não seja executado na segunda vez que a opção é selecionada
         printf("Tem certeza que deseja remover todos os eventos? (Esta ação é definitiva)\n");
         while (strcmp(confirm, "sim") && strcmp(confirm, "nao")) {
           printf("Digite \"sim\" ou \"nao\" => ");
@@ -135,7 +137,6 @@ void eventos() {
         }
         if (strcmp(confirm, "sim") == 0) {
           fclose(eventos); eventos = fopen("eventos", "w");
-          fclose(eventos); eventos = fopen("eventos", "r");
         } else
           printf("Operação cancelada\n");
       }
@@ -147,9 +148,6 @@ void eventos() {
         printf("%s", eventos_contents);
     }
   }
-
-  fclose(eventos);
-  return;
 }
 
 void menu(){
