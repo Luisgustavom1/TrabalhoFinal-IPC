@@ -27,6 +27,7 @@ void mostra1(struct a_definir T[]){
 
 void coleta_feedback( feedback_struct F2[] ){
     FILE *feedback_arq;
+    feedback_arq = fopen("feedback.txt", "r");
     if (feedback_arq == NULL) feedback_arq = fopen("feedback.txt", "w");
     feedback_arq = fopen("feedback.txt", "a");
 
