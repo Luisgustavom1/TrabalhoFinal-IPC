@@ -2,8 +2,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define TAMANHO_BUFFER 256 // Verificar com o João se isso é considerado uma variável global e se poder ter no trabalho. (Dá para corrigir fácil se não puder)
-
 struct a_definir{
 	//inserir código aqui
 };
@@ -42,33 +40,41 @@ void mostra1(struct a_definir T[]){
 
 void eventos() {
   // Os eventos serão guardados em um arquivo para melhor organização
+  const int TAMANHO_BUFFER = 256; // Máximo de caracteres que podem ser inseridos por linha
   printf("\n");
   FILE *eventos = fopen("eventos", "r");
   if (eventos == NULL) // Caso o arquivo "eventos" não exista, criá-lo
     eventos = fopen("eventos", "w");
-  fseek(eventos, 0, SEEK_END);
-  if (ftell(eventos) == 0) // Se o arquivo estiver vazio, imprimir a mensagem:
-    printf("Nenhum evento foi encontrado\n");
+  char eventos_contents[TAMANHO_BUFFER]; // Variável será usada para imprimir o conteúdo do arquivo "eventos"  
 
-  char eventos_contents[TAMANHO_BUFFER];
-  rewind(eventos);
-  while (fgets(eventos_contents, TAMANHO_BUFFER, eventos) != NULL) // Imprimir todas as linhas do arquivo eventos
-    printf("%s", eventos_contents);
-
-  // Menu de opções
   int opcao;
   while (1) {
     fclose(eventos); eventos = fopen("eventos", "r");
-    
+    printf("\n");
+    while (fgets(eventos_contents, TAMANHO_BUFFER, eventos) != NULL) // Imprimir todas as linhas do arquivo eventos
+      printf("%s", eventos_contents);
+
+    rewind(eventos);
+    fseek(eventos, 0, SEEK_END);
+    if (ftell(eventos) == 0) // Se o arquivo estiver vazio, imprimir a mensagem:
+      printf("Nenhum evento foi encontrado\n");
+
+    // Menu de opções
     printf("\n\nComandos:\n");
     printf("1 - Criar um evento\n");
-    printf("2 - Remover um evento\n");
-    printf("3 - Remover todos os eventos\n");
-    printf("4 - Recarregar eventos\n");
+    if (ftell(eventos) != 0){ // Opções só vão aparecer se existirem eventos
+      printf("2 - Remover um evento\n");
+      printf("3 - Remover todos os eventos\n");
+    }
+    printf("Qualquer tecla - Recarregar eventos\n");
     printf("9 - Voltar\n");
+    //
     printf("Digite o número da opção => ");
+    setbuf(stdin, NULL); // Evitar que o código entre em loop
+    opcao=-1; // Evitar erros caso o usuário não insira um número
     scanf("%d", &opcao);
     printf("\n");
+    
     if (opcao == 9) {
       fclose(eventos);
       return;
@@ -92,10 +98,10 @@ void eventos() {
       }
     }
 
-    if (opcao == 2) { // Remover um evento
+    if (opcao == 2 && ftell(eventos) != 0) { // Remover um evento
       // Todos os eventos serão listados com um número de referência na frente. O usuário digtará um número e o evento correspondente será excluído
       if (autenticacao() == 0) {
-        char arquivo_original[TAMANHO_BUFFER * 16] = {'\0'}; // Funciona com até 16 linhas de eventos, mude o número para suportar mais linhas
+        char arquivo_original[TAMANHO_BUFFER * 16]; // Funciona com até 16 linhas de eventos garantidamente, mude o número para suportar mais linhas
         int linha_deletar, linha_atual, i, c;
         for (i=0; i < TAMANHO_BUFFER*16; ++i)
           arquivo_original[i] = '\0';
@@ -114,7 +120,8 @@ void eventos() {
         while (linha_deletar >= i || linha_deletar < 0) // Impedir que números fora do intervalo sejam escritos
           scanf("%d", &linha_deletar);
 
-        fclose(eventos); eventos = fopen("eventos", "w"); fclose(eventos); eventos = fopen("eventos", "a"); // Tenho que testar se toda essa anarquia é necessária...
+        fclose(eventos); eventos = fopen("eventos", "w"); fclose(eventos); // Apagar o conteúdo do arquivo
+        eventos = fopen("eventos", "a");
 
         while (linha_atual < i) {
           if (linha_atual != linha_deletar) // Se a linha atual for igual à linha que será deletada, nada será impresso
@@ -126,7 +133,7 @@ void eventos() {
       }
     }
 
-    if (opcao == 3) { // Remover todos os eventos
+    if (opcao == 3 && ftell(eventos) != 0) { // Remover todos os eventos
       if (autenticacao() == 0) {
         char confirm[3];
         confirm[0] = '\0'; // Evitar que o while não seja executado na segunda vez que a opção é selecionada
@@ -140,12 +147,6 @@ void eventos() {
         } else
           printf("Operação cancelada\n");
       }
-    }
-
-    if (opcao == 4) { // Recarregar eventos
-      rewind(eventos);
-      while (fgets(eventos_contents, TAMANHO_BUFFER, eventos) != NULL) // Imprimir todas as linhas do arquivo eventos
-        printf("%s", eventos_contents);
     }
   }
 }
