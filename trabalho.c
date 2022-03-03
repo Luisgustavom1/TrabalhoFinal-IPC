@@ -187,7 +187,7 @@ void menu()
 
   while (1)
   {
-    printf("\nBem vindo ao Sistema de... ");
+    printf("\nBem vindo ao Sistema de um resort ");
     printf("\n1- Cadastrar ");
     printf("\n2- Mostrar Todos");
     printf("\n3- Mostrar um");
