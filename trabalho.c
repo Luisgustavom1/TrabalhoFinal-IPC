@@ -12,6 +12,26 @@ typedef struct feedback_struct{
     char nota_feedback[2];
 }feedback_struct;
 
+int autenticacao() {
+  // Solicita que o usuário digite uma senha até ele acertar. Quando ele acerta, é retornado 0; quando ele opta por sair, é retornado 1.
+  // Não tem criptografia nenhuma, é só para demonstrar
+  char senha[10] = {};
+  printf("Para executar esse comando, é necessário informar a senha de administração.\n");
+  
+  while (strcmp(senha, "senha") != 0) {
+    printf("Digite a senha => ");
+    scanf("%s", senha); printf("\n");
+    if (strcmp(senha, "\\sair") == 0) {
+      printf("A operação foi cancelada\n");
+      return 1;
+    }
+    if (strcmp(senha, "senha") != 0)
+      printf("\nSenha incorreta, para cancelar a operação, digite \"\\sair\" em vez da senha\n");
+  }
+  
+  return 0;
+}
+
 
 void cadastro(struct a_definir T[]){
 	//inserir código aqui
@@ -24,6 +44,7 @@ void mostra(struct a_definir T[]){
 void mostra1(struct a_definir T[]){
 	//inserir código aqui
 }
+
 
 void coleta_feedback( feedback_struct F2[] ){
     FILE *feedback_arq;
@@ -64,6 +85,118 @@ void mostra_contatos(){
     printf("Telefone: (34)99877-0392\n");
 }
 
+void eventos() {
+  // Os eventos serão guardados em um arquivo para melhor organização
+  const int TAMANHO_BUFFER = 256; // Máximo de caracteres que podem ser inseridos por linha
+  printf("\n");
+  FILE *eventos = fopen("eventos", "r");
+  if (eventos == NULL) // Caso o arquivo "eventos" não exista, criá-lo
+    eventos = fopen("eventos", "w");
+  char eventos_contents[TAMANHO_BUFFER]; // Variável será usada para imprimir o conteúdo do arquivo "eventos"  
+
+  int opcao;
+  while (1) {
+    fclose(eventos); eventos = fopen("eventos", "r");
+    printf("\n");
+    while (fgets(eventos_contents, TAMANHO_BUFFER, eventos) != NULL) // Imprimir todas as linhas do arquivo eventos
+      printf("%s", eventos_contents);
+
+    rewind(eventos);
+    fseek(eventos, 0, SEEK_END);
+    if (ftell(eventos) == 0) // Se o arquivo estiver vazio, imprimir a mensagem:
+      printf("Nenhum evento foi encontrado\n");
+
+    // Menu de opções
+    printf("\n\nComandos:\n");
+    printf("1 - Criar um evento\n");
+    if (ftell(eventos) != 0){ // Opções só vão aparecer se existirem eventos
+      printf("2 - Remover um evento\n");
+      printf("3 - Remover todos os eventos\n");
+    }
+    printf("Qualquer tecla - Recarregar eventos\n");
+    printf("9 - Voltar\n");
+    //
+    printf("Digite o número da opção => ");
+    setbuf(stdin, NULL); // Evitar que o código entre em loop
+    opcao=-1; // Evitar erros caso o usuário não insira um número
+    scanf("%d", &opcao);
+    printf("\n");
+    
+    if (opcao == 9) {
+      fclose(eventos);
+      return;
+    }
+    
+    if (opcao == 1) { // Adicionar um evento
+      // O usuário ditará um evento por linha. Para que ele saia do modo de digitação, basta digitar "\sair".
+      if (autenticacao() == 0) {
+        fclose(eventos); eventos = fopen("eventos", "a");
+        char eventreg_text[TAMANHO_BUFFER];
+        eventreg_text[0] = '0'; // O while abaixo não executa se a string já for igual a "\sair". Esta linha corrige isso mudando 1 caractere da string
+        printf("Digite os eventos a serem adicionados, separando-os por uma quebra de linha\nAo concluir, digite \"\\sair\"\n");
+        
+        while (strcmp(eventreg_text, "\\sair\n") != 0) {
+          setbuf(stdin, NULL);
+          fgets(eventreg_text, TAMANHO_BUFFER, stdin);
+          if (strcmp(eventreg_text, "\\sair\n") != 0) // Impedir que a string "\sair" seja escrita no arquivo
+            fputs(eventreg_text, eventos); // Vai lendo e já vai salvando no arquivo
+        }
+        printf("Os eventos foram gravados\n");
+      }
+    }
+
+    if (opcao == 2 && ftell(eventos) != 0) { // Remover um evento
+      // Todos os eventos serão listados com um número de referência na frente. O usuário digtará um número e o evento correspondente será excluído
+      if (autenticacao() == 0) {
+        char arquivo_original[TAMANHO_BUFFER * 16]; // Funciona com até 16 linhas de eventos garantidamente, mude o número para suportar mais linhas
+        int linha_deletar, linha_atual, i, c;
+        for (i=0; i < TAMANHO_BUFFER*16; ++i)
+          arquivo_original[i] = '\0';
+        linha_atual=i=c = 0;
+
+        rewind(eventos);
+        while (fgets(eventos_contents, TAMANHO_BUFFER, eventos) != NULL) { // Imprimir todas as linhas com um número de referência na frente
+          printf("%d | %s", i, eventos_contents);
+          strcat(arquivo_original, eventos_contents); // Transferindo o conteúdo do arquivo para o vetor "arquivo_original"
+          i++;
+        }
+        printf("\n");
+
+        printf("\nInsira o número do evento que será deletado => ");
+        linha_deletar=-1;
+        while (linha_deletar >= i || linha_deletar < 0) // Impedir que números fora do intervalo sejam escritos
+          scanf("%d", &linha_deletar);
+
+        fclose(eventos); eventos = fopen("eventos", "w"); fclose(eventos); // Apagar o conteúdo do arquivo
+        eventos = fopen("eventos", "a");
+
+        while (linha_atual < i) {
+          if (linha_atual != linha_deletar) // Se a linha atual for igual à linha que será deletada, nada será impresso
+            fprintf(eventos, "%c", arquivo_original[c]);
+          if (arquivo_original[c] == '\n')
+            linha_atual++;
+          c++;
+        }
+      }
+    }
+
+    if (opcao == 3 && ftell(eventos) != 0) { // Remover todos os eventos
+      if (autenticacao() == 0) {
+        char confirm[3];
+        confirm[0] = '\0'; // Evitar que o while não seja executado na segunda vez que a opção é selecionada
+        printf("Tem certeza que deseja remover todos os eventos? (Esta ação é definitiva)\n");
+        while (strcmp(confirm, "sim") && strcmp(confirm, "nao")) {
+          printf("Digite \"sim\" ou \"nao\" => ");
+          scanf("%s", confirm);
+        }
+        if (strcmp(confirm, "sim") == 0) {
+          fclose(eventos); eventos = fopen("eventos", "w");
+        } else
+          printf("Operação cancelada\n");
+      }
+    }
+  }
+}
 
 void menu(){
 	int opcao;
@@ -76,6 +209,7 @@ void menu(){
 		printf("\n1- Cadastrar ");
 		printf("\n2- Mostrar Todos");
 		printf("\n3- Mostrar um");
+    printf("\n4- Mostrar todos os lazeres/atrações/eventos");
 		printf("\n5- Deixe seu Feedback");
 		printf("\n7- Mostrar Contatos");
 		printf("\n9- Sair ");
@@ -87,6 +221,7 @@ void menu(){
 		if(opcao == 3) mostra1(P);
 		if(opcao == 5) coleta_feedback(F);
 		if(opcao == 7) mostra_contatos();
+		if(opcao == 4) eventos();
 		if(opcao == 9) return;
 	}
 }
