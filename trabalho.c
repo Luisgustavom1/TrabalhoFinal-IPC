@@ -72,14 +72,14 @@ void eventos()
 
     // Menu de opções
     printf("\n\nComandos:\n");
+    printf("Qualquer tecla - Recarregar eventos\n");
     printf("1 - Criar um evento\n");
     if (ftell(eventos) != 0)
     { // Opções só vão aparecer se existirem eventos
       printf("2 - Remover um evento\n");
       printf("3 - Remover todos os eventos\n");
     }
-    printf("Qualquer tecla - Recarregar eventos\n");
-    printf("9 - Voltar\n");
+    printf("\n\n9 - Voltar\n");
     //
     printf("Digite o número da opção => ");
     setbuf(stdin, NULL); // Evitar que o código entre em loop
