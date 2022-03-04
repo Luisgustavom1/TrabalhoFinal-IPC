@@ -35,6 +35,23 @@ void messageNoFeedbacks()
 	printf("======================\n");
 }
 
+void askForNewFeedbacks(int opcao)
+{
+	printf("\nDeseja deixar seu feedback para nos?\n");
+	printf("1- Deixar feedback\n");
+	printf("2- Voltar ao menu\n");
+	printf("Digite opção: ");
+	scanf("%d", &opcao);
+	if (opcao == 2)
+	{
+		return;
+	}
+	else
+	{
+		// coleta_feedback();
+	}
+}
+
 void seeAllFeedbacks(int opcao)
 {
 	struct Feedback F;
@@ -60,16 +77,7 @@ void seeAllFeedbacks(int opcao)
 	}
 	printf("======================\n");
 
-	printf("\nDeseja deixar deixar seu feedback para nos?\n");
-	printf("1- Deixar feedback\n");
-	printf("2- Voltar ao menu\n");
-	printf("Digite opção: ");
-	scanf("%d", &opcao);
-	if (opcao == 2) {
-		return;
-	} else {
-		// coleta_feedback();
-	}
+	askForNewFeedbacks(opcao);
 	fclose(file);
 }
 
