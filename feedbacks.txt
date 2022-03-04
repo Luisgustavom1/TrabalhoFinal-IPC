@@ -1,0 +1,23 @@
+Nome: Luis
+Nota: 5
+Feedback: Resort muito mala, so coisa top !!
+ 
+Nome: Karim 
+Nota: 4 
+Feedback: So brinquedo brabo, muito pica mane.
+
+Nome: Gustavo 
+Nota: 5 
+Feedback: Lugar bom pra caralho!!
+
+Nome: Paulo 
+Nota: 1 
+Feedback: Pessimo, horrivel, nao voltaria
+
+Nome: Thiago 
+Nota: 2 
+Feedback: Que merda
+
+Nome: Leonardo 
+Nota: 1 
+Feedback: Ruim, no exercito era melhor.

@@ -8,7 +8,7 @@ struct a_definir
 
 struct Feedback
 {
-	char comments[100];
+	char feedback[100];
 	char name[60];
 	int stars;
 };
@@ -28,24 +28,48 @@ void mostra1(struct a_definir T[])
 	// inserir código aqui
 }
 
-void seeAllFeedbacks()
+void messageNoFeedbacks()
+{
+	printf("======================\n");
+	printf("Nenhum feedback encontrado!! Nos deixe uma sugestão ou crítica acessando a opção 5!!\n");
+	printf("======================\n");
+}
+
+void seeAllFeedbacks(int opcao)
 {
 	struct Feedback F;
 
 	FILE *file;
-	file = fopen("teste.txt", "r");
+	file = fopen("feedbacks.txt", "r");
 
-	printf("Feedback do resort mais brabo que tem!!\n");
-	printf("==========================\n");
-	while (fscanf(file, "%s %d", F.name, &F.stars) != EOF)
+	if (file == NULL)
 	{
-		fgets(F.comments, 100, file);
-
-		printf("%s %d estrelas:\n", F.name, F.stars);
-		printf("- %s\n", F.comments);
+		messageNoFeedbacks();
+		return 0;
 	}
-	printf("==========================");
 
+	printf("Confira os feedbacks que nossos hospedes deixaram!\n");
+	printf("======================");
+	while (fscanf(file, "Nome: %60[^\n]\n", F.name) != EOF)
+	{
+		fscanf(file, "Nota: %d\n", &F.stars);
+		fscanf(file, "Feedback: %100[^\n]\n", F.feedback);
+
+		printf("\n%s %d estrelas:\n", F.name, F.stars);
+		printf("- %s\n", F.feedback);
+	}
+	printf("======================\n");
+
+	printf("\nDeseja deixar deixar seu feedback para nos?\n");
+	printf("1- Deixar feedback\n");
+	printf("2- Voltar ao menu\n");
+	printf("Digite opção: ");
+	scanf("%d", &opcao);
+	if (opcao == 2) {
+		return;
+	} else {
+		// coleta_feedback();
+	}
 	fclose(file);
 }
 
@@ -64,6 +88,7 @@ void menu()
 		printf("\n9- Sair ");
 		printf("\nDigite opção: ");
 		scanf("%d", &opcao);
+		printf("\n");
 
 		if (opcao == 1)
 			cadastro(P);
@@ -72,7 +97,7 @@ void menu()
 		if (opcao == 3)
 			mostra1(P);
 		if (opcao == 6)
-			seeAllFeedbacks();
+			seeAllFeedbacks(opcao);
 		if (opcao == 9)
 			return;
 	}
