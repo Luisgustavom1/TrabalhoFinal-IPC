@@ -9,7 +9,8 @@ struct a_definir
 
 struct Cliente
 {
-  char nome[100], cpf[30], nasc[20], profissao[50], nacionalidade[30], idade[10], sexo[20], id[30], endereco[100], cep[30], telefone[30], cidade[50], estado[50], pais[30], email[30];
+  char nome[100], cpf[30], nasc[20], profissao[50], nacionalidade[30], idade[10], sexo[20], rg[30], endereco[100], cep[30], telefone[30], cidade[50], estado[50], pais[30], email[30];
+  int id;
 };
 
 typedef struct Feedback_struct
@@ -25,7 +26,27 @@ struct Feedback
   char name[60];
   int stars;
 };
+void mostrarCadastros(int opcao)
+{
 
+  FILE *f;
+  f = fopen("usuarios.txt", "r");
+
+  if (f == NULL)
+  {
+    printf("Nenhum cadastro encontrado!\n");
+    return 0;
+  }
+
+  char destino[100];
+
+  while (fgets(destino, 100, f) != NULL) // Imprimir todas as linhas do arquivo eventos
+  {
+      printf("%s", destino); 
+  }
+
+  fclose(f);
+}
 int autenticacao()
 {
   // Solicita que o usuário digite uma senha até ele acertar. Quando ele acerta, é retornado 0; quando ele opta por sair, é retornado 1.
@@ -49,7 +70,6 @@ int autenticacao()
 
   return 0;
 }
-
 void cadastro(struct Cliente T[])
 {
   FILE *f;
@@ -64,6 +84,8 @@ void cadastro(struct Cliente T[])
   int i, confirma;
   for (i = 0;; i++)
   {
+    
+    
     setbuf(stdin, NULL);
     printf("Nome completo:\n");
     scanf("%[^\n]s", T[i].nome);
@@ -75,8 +97,8 @@ void cadastro(struct Cliente T[])
     setbuf(stdin, NULL);
     printf("\n");
 
-    printf("Identidade(apenas o numero):\n");
-    scanf("%[^\n]s", T[i].id);
+    printf("RG(apenas o numero):\n");
+    scanf("%[^\n]s", T[i].rg);
     setbuf(stdin, NULL);
     printf("\n");
 
@@ -142,7 +164,7 @@ void cadastro(struct Cliente T[])
 
     printf("Nome: %s\n", T[i].nome);
     printf("CPF: %s\n", T[i].cpf);
-    printf("Identidade: %s\n", T[i].id);
+    printf("RG: %s\n", T[i].rg);
     printf("Data de nascimento: %s\n", T[i].nasc);
     printf("Nacionalidade: %s\n", T[i].nacionalidade);
     printf("Idade: %s\n", T[i].idade);
@@ -166,7 +188,7 @@ void cadastro(struct Cliente T[])
     {
       fprintf(f, "Nome: %s\n", T[i].nome);
       fprintf(f, "CPF: %s\n", T[i].cpf);
-      fprintf(f, "Identidade: %s\n", T[i].id);
+      fprintf(f, "Identidade: %s\n", T[i].rg);
       fprintf(f, "Data de nascimento: %s\n", T[i].nasc);
       fprintf(f, "Nacionalidade: %s\n", T[i].nacionalidade);
       fprintf(f, "Idade: %s\n", T[i].idade);
@@ -180,6 +202,7 @@ void cadastro(struct Cliente T[])
       fprintf(f, "Pais: %s\n", T[i].pais);
       fprintf(f, "E-mail: %s\n", T[i].email);
       fprintf(f, "\n");
+      fclose(f);
       return;
     }
 
@@ -435,6 +458,7 @@ void menu()
     printf("\n5- Dar um feedback");
     printf("\n6- Ver feedback");
     printf("\n7- Ver contatos do Resort");
+    printf("\n8- Todos os cadastros");
     printf("\n9- Sair ");
     printf("\nDigite opção: ");
     scanf("%d", &opcao);
@@ -449,6 +473,8 @@ void menu()
       verTodosOsFeedbacks(opcao);
     if (opcao == 7)
       mostra_contatos();
+    if (opcao == 8)
+      mostrarCadastros(opcao);
     if (opcao == 9)
       return;
   }
