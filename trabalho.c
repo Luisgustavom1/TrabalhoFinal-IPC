@@ -26,7 +26,8 @@ struct Feedback
   char name[60];
   int stars;
 };
-void mostrarCadastros(int opcao)
+
+void mostrarCadastros()
 {
 
   FILE *f;
@@ -35,11 +36,10 @@ void mostrarCadastros(int opcao)
   if (f == NULL)
   {
     printf("Nenhum cadastro encontrado!\n");
-    return 0;
+    return;
   }
 
   char destino[100];
-
   while (fgets(destino, 100, f) != NULL) // Imprimir todas as linhas do arquivo eventos
   {
       printf("%s", destino); 
@@ -47,6 +47,25 @@ void mostrarCadastros(int opcao)
 
   fclose(f);
 }
+
+void mostra_um_cadastro(int ID)
+{
+  // Lendo último id usado
+  FILE *f = fopen("usuarios.txt", "r");
+      
+  char linha_atual[200];
+  int ultimoID = 0;
+
+  while (fgets(linha_atual, 200, f) != NULL) {
+    if (strstr(linha_atual, "ID: ")) { // Se a linha conter "ID: "
+      ultimoID++;
+    }
+    if (ultimoID == ID)
+      printf("%s", linha_atual);
+  }
+}
+
+
 int autenticacao()
 {
   // Solicita que o usuário digite uma senha até ele acertar. Quando ele acerta, é retornado 0; quando ele opta por sair, é retornado 1.
@@ -84,8 +103,6 @@ void cadastro(struct Cliente T[])
   int i, confirma;
   for (i = 0;; i++)
   {
-    
-    
     setbuf(stdin, NULL);
     printf("Nome completo:\n");
     scanf("%[^\n]s", T[i].nome);
@@ -186,6 +203,21 @@ void cadastro(struct Cliente T[])
 
     if (confirma == 1)
     {
+      // Lendo último id usado
+      fclose(f); f = fopen("usuarios.txt", "r");
+      char linha_atual[200];
+      int ultimoID = 0;
+
+      while (fgets(linha_atual, 200, f) != NULL)
+        if (strstr(linha_atual, "ID: ")) // Se a linha conter "ID: "
+          ultimoID++;
+      
+      ultimoID++;
+            
+      // Escrevendo
+      fclose(f); f = fopen("usuarios.txt", "a");
+      
+      fprintf(f, "ID: %d\n", ultimoID);
       fprintf(f, "Nome: %s\n", T[i].nome);
       fprintf(f, "CPF: %s\n", T[i].cpf);
       fprintf(f, "Identidade: %s\n", T[i].rg);
@@ -443,7 +475,7 @@ void mostra_contatos()
 
 void menu()
 {
-  int opcao;
+  int opcao, ID;
   struct Cliente C[1];
   struct Feedback_struct F[30];
   struct a_definir P[30];
@@ -459,7 +491,8 @@ void menu()
     printf("\n6- Ver feedback");
     printf("\n7- Ver contatos do Resort");
     printf("\n8- Todos os cadastros");
-    printf("\n9- Sair ");
+    printf("\n9- Mostrar 1 cadastro");
+    printf("\n0- Sair ");
     printf("\nDigite opção: ");
     scanf("%d", &opcao);
 
@@ -474,8 +507,13 @@ void menu()
     if (opcao == 7)
       mostra_contatos();
     if (opcao == 8)
-      mostrarCadastros(opcao);
-    if (opcao == 9)
+      mostrarCadastros();
+    if (opcao == 9) {
+      printf("Digite o ID do cadastro a ser mostrado => ");
+      scanf("%d", &ID);
+      mostra_um_cadastro(ID);
+    }
+    if (opcao == 0)
       return;
   }
 }
