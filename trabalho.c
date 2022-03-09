@@ -54,7 +54,6 @@ void cadastro(struct cliente T[])
   if (f == NULL)
   {
     printf("Arquivo nao pode ser aberto");
-    getchar();
     exit(1);
   }
 
