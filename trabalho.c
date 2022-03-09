@@ -7,10 +7,17 @@ struct a_definir
   // inserir código aqui
 };
 
-struct cliente
+struct Cliente
 {
   char nome[100], cpf[30], nasc[20], profissao[50], nacionalidade[30], idade[10], sexo[20], id[30], endereco[100], cep[30], telefone[30], cidade[50], estado[50], pais[30], email[30];
 };
+
+typedef struct Feedback_struct
+{
+  char coment_feedback[1000];
+  char nome_feedback[60];
+  char nota_feedback[2];
+} Feedback_struct;
 
 int autenticacao()
 {
@@ -36,17 +43,7 @@ int autenticacao()
   return 0;
 }
 
-void mostra(struct a_definir T[])
-{
-  // inserir código aqui
-}
-
-void mostra1(struct a_definir T[])
-{
-  // inserir código aqui
-}
-
-void cadastro(struct cliente T[])
+void cadastro(struct Cliente T[])
 {
   FILE *f;
 
@@ -317,10 +314,53 @@ void eventos()
   }
 }
 
+void coleta_feedback(Feedback_struct F2[])
+{
+  FILE *feedback_arq;
+  feedback_arq = fopen("feedback.txt", "r");
+  if (feedback_arq == NULL)
+    feedback_arq = fopen("feedback.txt", "w");
+  feedback_arq = fopen("feedback.txt", "a");
+
+  setbuf(stdin, NULL);
+  printf("\nEscreva seu nome: ");
+  scanf("%[^\n]s", F2[0].nome_feedback);
+  fputs("Nome: ", feedback_arq);
+  fputs(F2[0].nome_feedback, feedback_arq);
+  fputc('\n', feedback_arq);
+
+  setbuf(stdin, NULL);
+  printf("\nDeixe uma nota (0 a 5): ");
+  scanf("%s", F2[0].nota_feedback);
+  fputs("Nota: ", feedback_arq);
+  fputs(F2[0].nota_feedback, feedback_arq);
+  fputc('\n', feedback_arq);
+
+  setbuf(stdin, NULL);
+  printf("\nAdicione um comentario: ");
+  scanf("%[^\n]s", F2[0].coment_feedback);
+  fputs("Feedback: ", feedback_arq);
+  fputs(F2[0].coment_feedback, feedback_arq);
+  fputc('\n', feedback_arq);
+  fputc('\n', feedback_arq);
+
+  fclose(feedback_arq);
+
+  setbuf(stdin, NULL);
+}
+
+void mostra_contatos()
+{
+  printf("\nInstagram: resort_instagram\n");
+  printf("Gmail: resort@gmail.com\n");
+  printf("Telefone: (34)99877-0392\n");
+}
+
 void menu()
 {
   int opcao;
-  struct cliente C[1];
+  struct Cliente C[1];
+  struct Feedback_struct F[30]; 
   struct a_definir P[30];
 
   while (1)
@@ -330,18 +370,20 @@ void menu()
     printf("\n2- Mostrar Todos");
     printf("\n3- Mostrar um");
     printf("\n4- Mostrar todos os lazeres/atrações/eventos");
+    printf("\n5- Dar um feedback");
+    printf("\n6- Ver contatos do Resort");
     printf("\n9- Sair ");
     printf("\nDigite opção: ");
     scanf("%d", &opcao);
 
     if (opcao == 1)
       cadastro(C);
-    if (opcao == 2)
-      mostra(P);
-    if (opcao == 3)
-      mostra1(P);
     if (opcao == 4)
       eventos();
+    if (opcao == 5)
+      coleta_feedback(F);
+    if (opcao == 6)
+      mostra_contatos();
     if (opcao == 9)
       return;
   }
