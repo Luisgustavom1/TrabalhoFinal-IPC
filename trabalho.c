@@ -19,6 +19,13 @@ typedef struct Feedback_struct
   char nota_feedback[2];
 } Feedback_struct;
 
+struct Feedback
+{
+  char feedback[100];
+  char name[60];
+  int stars;
+};
+
 int autenticacao()
 {
   // Solicita que o usuário digite uma senha até ele acertar. Quando ele acerta, é retornado 0; quando ele opta por sair, é retornado 1.
@@ -314,6 +321,61 @@ void eventos()
   }
 }
 
+void mensagemDeNenhumFeedback()
+{
+  printf("======================\n");
+  printf("Nenhum feedback encontrado!! Nos deixe uma sugestão ou crítica acessando a opção 5!!\n");
+  printf("======================\n");
+}
+
+void perguntarParaNovoFeedback(int opcao)
+{
+  struct Feedback_struct NovoFeedback[1];
+
+  printf("\nDeseja deixar seu feedback para nos?\n");
+  printf("1- Deixar feedback\n");
+  printf("2- Voltar ao menu\n");
+  printf("Digite opção: ");
+  scanf("%d", &opcao);
+  if (opcao == 2)
+  {
+    return;
+  }
+  else
+  {
+    coleta_feedback(NovoFeedback);
+  }
+}
+
+void verTodosOsFeedbacks(int opcao)
+{
+  struct Feedback F;
+
+  FILE *file;
+  file = fopen("feedback.txt", "r");
+
+  if (file == NULL)
+  {
+    mensagemDeNenhumFeedback();
+    return 0;
+  }
+
+  printf("Confira os feedbacks que nossos hospedes deixaram!\n");
+  printf("======================");
+  while (fscanf(file, "Nome: %60[^\n]\n", F.name) != EOF)
+  {
+    fscanf(file, "Nota: %d\n", &F.stars);
+    fscanf(file, "Feedback: %100[^\n]\n", F.feedback);
+
+    printf("\n%s - %d estrelas:\n", F.name, F.stars);
+    printf("- %s\n", F.feedback);
+  }
+  printf("======================\n");
+
+  perguntarParaNovoFeedback(opcao);
+  fclose(file);
+}
+
 void coleta_feedback(Feedback_struct F2[])
 {
   FILE *feedback_arq;
@@ -360,7 +422,7 @@ void menu()
 {
   int opcao;
   struct Cliente C[1];
-  struct Feedback_struct F[30]; 
+  struct Feedback_struct F[30];
   struct a_definir P[30];
 
   while (1)
@@ -371,7 +433,8 @@ void menu()
     printf("\n3- Mostrar um");
     printf("\n4- Mostrar todos os lazeres/atrações/eventos");
     printf("\n5- Dar um feedback");
-    printf("\n6- Ver contatos do Resort");
+    printf("\n6- Ver feedback");
+    printf("\n7- Ver contatos do Resort");
     printf("\n9- Sair ");
     printf("\nDigite opção: ");
     scanf("%d", &opcao);
@@ -383,6 +446,8 @@ void menu()
     if (opcao == 5)
       coleta_feedback(F);
     if (opcao == 6)
+      verTodosOsFeedbacks(opcao);
+    if (opcao == 7)
       mostra_contatos();
     if (opcao == 9)
       return;
