@@ -582,7 +582,7 @@ void menu()
     if (opcao == 6)
       verTodosOsFeedbacks(opcao);
     if (opcao == 7)
-    mostra_contatos();
+      mostra_contatos();
     if (opcao == 9)
       return;
   }
