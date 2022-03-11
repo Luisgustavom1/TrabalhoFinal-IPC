@@ -33,14 +33,14 @@ void mostrarCadastros()
   FILE *f;
   f = fopen("usuarios.txt", "r");
 
-  if (f == NULL)
+  if (f == NULL) //verificando se o arquivo existe ou nao
   {
-    printf("Nenhum cadastro encontrado!\n");
+    printf("Nenhum cadastro encontrado!\n"); 
     return;
   }
 
   char destino[100];
-  while (fgets(destino, 100, f) != NULL) // Imprimir todas as linhas do arquivo eventos
+  while (fgets(destino, 100, f) != NULL) // Imprimir todas as linhas do arquivo eventos; destino = onde vai ser armazenado a string; 100 = tam max da string; f = arq de onde sao lidos os dados
   {
       printf("%s", destino); 
   }
@@ -52,17 +52,29 @@ void mostra_um_cadastro(int ID)
 {
   // Lendo último id usado
   FILE *f = fopen("usuarios.txt", "r");
+  
+  if (f == NULL) //verificando se o arquivo existe ou nao
+  {
+    printf("Nenhum cadastro encontrado!\n"); 
+    return;
+  }
+
       
   char linha_atual[200];
   int ultimoID = 0;
 
-  while (fgets(linha_atual, 200, f) != NULL) {
-    if (strstr(linha_atual, "ID: ")) { // Se a linha conter "ID: "
+  while (fgets(linha_atual, 200, f) != NULL)
+  { //linha_atual= onde vai ser armaz a string lida; 200 = tam da string; f = arq lido
+    if (strstr(linha_atual, "ID: ")) // Se a linha conter "ID: " // strstr (onde eu vou buscar, qual string eu quero buscar)
+    { 
       ultimoID++;
     }
     if (ultimoID == ID)
+    {
       printf("%s", linha_atual);
+    }
   }
+  return;
 }
 
 
@@ -94,11 +106,6 @@ void cadastro(struct Cliente T[])
   FILE *f;
 
   f = fopen("usuarios.txt", "a");
-  if (f == NULL)
-  {
-    printf("Arquivo nao pode ser aberto");
-    exit(1);
-  }
 
   int i, confirma;
   for (i = 0;; i++)
