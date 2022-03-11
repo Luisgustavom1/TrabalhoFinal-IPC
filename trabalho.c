@@ -2,9 +2,9 @@
 #include <stdlib.h>
 #include <string.h>
 
-struct a_definir
+struct Planos
 {
-  // inserir código aqui
+  char nome_do_plano[100], quantidade_de_camas[10], refeicoes_no_hotel[6], ingressos_para_eventos[100], transporte_vip[10], quantidade_passagens[10], tipo_de_passagem[100], tamanho_do_quarto[100], quantidade_de_banheiros[10], quantidade_de_dias[30];
 };
 
 struct Cliente
@@ -187,6 +187,108 @@ void cadastro(struct Cliente T[])
   }
 }
 
+void cadastro_de_planos(struct Planos T[])
+{
+  FILE *ponteiro_arquivo;
+
+  ponteiro_arquivo = fopen("planos.txt", "a");
+  if (ponteiro_arquivo == NULL)
+  {
+    printf("Arquivo nao pode ser aberto");
+    exit(1);
+  }
+
+  int i, confirma;
+  for (i = 0;; i++)
+  {
+    setbuf(stdin, NULL);
+    printf("Nome do plano:\n");
+    scanf("%[^\n]s", T[i].nome_do_plano);
+    setbuf(stdin, NULL);
+    printf("\n");
+
+    printf("Quantidade de camas (1 a 5):\n");
+    scanf("%[^\n]s", T[i].quantidade_de_camas);
+    setbuf(stdin, NULL);
+    printf("\n");
+
+    printf("Quantas refeições terá no hotel (1 a 6):\n");
+    scanf("%[^\n]s", T[i].refeicoes_no_hotel);
+    setbuf(stdin, NULL);
+    printf("\n");
+
+    printf("Ingressos para eventos:\n");
+    scanf("%[^\n]s", T[i].ingressos_para_eventos);
+    setbuf(stdin, NULL);
+    printf("\n");
+
+    printf("Transporte VIP (1 a 3 por dia):\n");
+    scanf("%[^\n]s", T[i].transporte_vip);
+    setbuf(stdin, NULL);
+    printf("\n");
+
+    printf("Quantidade de passagens (ida e volta):\n");
+    scanf("%[^\n]s", T[i].quantidade_passagens);
+    setbuf(stdin, NULL);
+    printf("\n");
+
+    printf("Tipo de veículo de transporte (passagens):\n");
+    scanf("%[^\n]s", T[i].tipo_de_passagem);
+    setbuf(stdin, NULL);
+    printf("\n");
+
+    printf("Tamanho do quarto (pequeno, médio, grande, VIP):\n");
+    scanf("%[^\n]s", T[i].tamanho_do_quarto);
+    setbuf(stdin, NULL);
+    printf("\n");
+
+    printf("Quantidade de banheiros (1 ou 2):\n");
+    scanf("%[^\n]s", T[i].quantidade_de_banheiros);
+    setbuf(stdin, NULL);
+    printf("\n");
+
+    printf("Quantidade de dias:\n");
+    scanf("%[^\n]s", T[i].quantidade_de_dias);
+    setbuf(stdin, NULL);
+    printf("\n");
+
+    printf("Nome do plano: %s\n", T[i].nome_do_plano);
+    printf("Quantidade de camas (1 a 5): %s\n", T[i].quantidade_de_camas);
+    printf("Quantas refeições terá no hotel (1 a 6): %s\n", T[i].refeicoes_no_hotel);
+    printf("Ingressos para eventos: %s\n", T[i].ingressos_para_eventos);
+    printf("Transporte VIP (1 a 3 por dia): %s\n", T[i].transporte_vip);
+    printf("Quantidade de passagens (ida e volta): %s\n", T[i].quantidade_passagens);
+    printf("Tipo de veículo de transporte (passagens): %s\n", T[i].tipo_de_passagem);
+    printf("Tamanho do quarto (pequeno, médio, grande, VIP): %s\n", T[i].tamanho_do_quarto);
+    printf("Quantidade de banheiros (1 ou 2): %s\n", T[i].quantidade_de_banheiros);
+    printf("Quantidade de dias: %s\n", T[i].quantidade_de_dias);
+    printf("\n");
+
+    printf("Confirmar cadastro ?\n");
+    printf("1 - Sim\n");
+    printf("2 - Nao\n");
+    scanf("%d", &confirma);
+
+    if (confirma == 1)
+    {
+      fprintf(ponteiro_arquivo, "Nome do plano: %s\n", T[i].nome_do_plano);
+      fprintf(ponteiro_arquivo, "Quantidade de camas (1 a 5): %s\n", T[i].quantidade_de_camas);
+      fprintf(ponteiro_arquivo, "Quantas refeições terá no hotel (1 a 6): %s\n", T[i].refeicoes_no_hotel);
+      fprintf(ponteiro_arquivo, "Ingressos para eventos: %s\n", T[i].ingressos_para_eventos);
+      fprintf(ponteiro_arquivo, "Transporte VIP (1 a 3 por dia): %s\n", T[i].transporte_vip);
+      fprintf(ponteiro_arquivo, "Quantidade de passagens (ida e volta): %s\n", T[i].quantidade_passagens);
+      fprintf(ponteiro_arquivo, "Tipo de veículo de transporte (passagens): %s\n", T[i].tipo_de_passagem);
+      fprintf(ponteiro_arquivo, "Tamanho do quarto (pequeno, médio, grande, VIP): %s\n", T[i].tamanho_do_quarto);
+      fprintf(ponteiro_arquivo, "Quantidade de banheiros (1 ou 2): %s\n", T[i].quantidade_de_banheiros);
+      fprintf(ponteiro_arquivo, "Quantidade de dias: %s\n", T[i].quantidade_de_dias);
+      fprintf(ponteiro_arquivo, "\n");
+      return;
+    }
+
+    fclose(ponteiro_arquivo);
+  }
+}
+
 void eventos()
 {
   // Os eventos serão guardados em um arquivo para melhor organização
@@ -321,6 +423,34 @@ void eventos()
   }
 }
 
+void mostrar_todos_os_planos(struct Planos T[])
+{
+  FILE *ponteiro_arquivo;
+  int i;
+  char leitura, output[10000];
+
+  ponteiro_arquivo = fopen("planos.txt", "r");
+
+  if (ponteiro_arquivo == NULL)
+  {
+    printf("Erro na abertura do arquivo");
+    exit(1);
+  }
+  printf("\n\nMostrando planos...\n\n");
+  i = 0;
+  leitura = fgetc(ponteiro_arquivo);
+  while (leitura != EOF)
+  {
+    output[i] = leitura;
+    printf("%c", output[i]);
+    i++;
+    leitura = fgetc(ponteiro_arquivo);
+  }
+
+  return;
+  fclose(ponteiro_arquivo);
+}
+
 void mensagemDeNenhumFeedback()
 {
   printf("======================\n");
@@ -423,14 +553,14 @@ void menu()
   int opcao;
   struct Cliente C[1];
   struct Feedback_struct F[30];
-  struct a_definir P[30];
+  struct Planos P[100];
 
   while (1)
   {
     printf("\nBem vindo ao Sistema de um resort ");
-    printf("\n1- Cadastrar ");
-    printf("\n2- Mostrar Todos");
-    printf("\n3- Mostrar um");
+    printf("\n1- Cadastrar clientes");
+    printf("\n2- Cadastrar um plano");
+    printf("\n3- Mostrar todos os planos");
     printf("\n4- Mostrar todos os lazeres/atrações/eventos");
     printf("\n5- Dar um feedback");
     printf("\n6- Ver feedback");
@@ -441,6 +571,10 @@ void menu()
 
     if (opcao == 1)
       cadastro(C);
+    if (opcao == 2)
+      cadastro_de_planos(P);
+    if (opcao == 3)
+      mostrar_todos_os_planos(P);
     if (opcao == 4)
       eventos();
     if (opcao == 5)
@@ -448,7 +582,7 @@ void menu()
     if (opcao == 6)
       verTodosOsFeedbacks(opcao);
     if (opcao == 7)
-      mostra_contatos();
+    mostra_contatos();
     if (opcao == 9)
       return;
   }
