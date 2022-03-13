@@ -12,13 +12,6 @@ struct Cliente
   char nome[100], cpf[30], nasc[20], profissao[50], nacionalidade[30], idade[10], sexo[20], id[30], endereco[100], cep[30], telefone[30], cidade[50], estado[50], pais[30], email[30];
 };
 
-typedef struct Feedback_struct
-{
-  char coment_feedback[1000];
-  char nome_feedback[60];
-  char nota_feedback[2];
-} Feedback_struct;
-
 struct Feedback
 {
   char feedback[100];
@@ -451,16 +444,47 @@ void mostrar_todos_os_planos(struct Planos T[])
   fclose(ponteiro_arquivo);
 }
 
-void mensagemDeNenhumFeedback()
+void coleta_feedback()
+{
+  struct Feedback F;
+
+  FILE *feedback_arq;
+  feedback_arq = fopen("feedback.txt", "r");
+  if (feedback_arq == NULL)
+    feedback_arq = fopen("feedback.txt", "w");
+  feedback_arq = fopen("feedback.txt", "a");
+
+  setbuf(stdin, NULL);
+  printf("\nEscreva seu nome: ");
+  scanf("%[^\n]s", F.name);
+  fprintf(feedback_arq, "Nome: %s\n", F.name);
+
+  setbuf(stdin, NULL);
+  printf("\nDeixe uma nota (0 a 5): ");
+  scanf("%d", &F.stars);
+  fprintf(feedback_arq, "Nota: %d\n", F.stars);
+
+  setbuf(stdin, NULL);
+  printf("\nAdicione um comentario: ");
+  scanf("%[^\n]s", F.feedback);
+  fprintf(feedback_arq, "Feedback: %s\n\n", F.feedback);
+
+  fclose(feedback_arq);
+
+  setbuf(stdin, NULL);
+}
+
+void mensagem_de_nenhum_feedback()
 {
   printf("======================\n");
   printf("Nenhum feedback encontrado!! Nos deixe uma sugestão ou crítica acessando a opção 5!!\n");
   printf("======================\n");
 }
 
-void perguntarParaNovoFeedback(int opcao)
+void perguntar_para_novo_feedback()
 {
-  struct Feedback_struct NovoFeedback[1];
+  int opcao = 0;
+  struct Feedback NovoFeedback[1];
 
   printf("\nDeseja deixar seu feedback para nos?\n");
   printf("1- Deixar feedback\n");
@@ -477,68 +501,34 @@ void perguntarParaNovoFeedback(int opcao)
   }
 }
 
-void verTodosOsFeedbacks(int opcao)
+void ver_todos_os_feedbacks()
 {
   struct Feedback F;
 
-  FILE *file;
-  file = fopen("feedback.txt", "r");
+  FILE *feedback_arq;
+  feedback_arq = fopen("feedback.txt", "r");
 
-  if (file == NULL)
+  if (feedback_arq == NULL)
   {
-    mensagemDeNenhumFeedback();
-    return 0;
+    mensagem_de_nenhum_feedback();
+    return;
   }
 
   printf("Confira os feedbacks que nossos hospedes deixaram!\n");
-  printf("======================");
-  while (fscanf(file, "Nome: %60[^\n]\n", F.name) != EOF)
+  while (fscanf(feedback_arq, "Nome: %60[^\n]\n", F.name) != EOF)
   {
-    fscanf(file, "Nota: %d\n", &F.stars);
-    fscanf(file, "Feedback: %100[^\n]\n", F.feedback);
-
-    printf("\n%s - %d estrelas:\n", F.name, F.stars);
+    fscanf(feedback_arq, "Nota: %d\n", &F.stars);
+    fscanf(feedback_arq, "Feedback: %100[^\n]\n", F.feedback);
+    
+    printf("======================\n");
+    printf("Nome: %s - %d estrelas:\n", F.name, F.stars);
     printf("- %s\n", F.feedback);
+    printf("======================\n");
   }
-  printf("======================\n");
 
-  perguntarParaNovoFeedback(opcao);
-  fclose(file);
-}
-
-void coleta_feedback(Feedback_struct F2[])
-{
-  FILE *feedback_arq;
-  feedback_arq = fopen("feedback.txt", "r");
-  if (feedback_arq == NULL)
-    feedback_arq = fopen("feedback.txt", "w");
-  feedback_arq = fopen("feedback.txt", "a");
-
-  setbuf(stdin, NULL);
-  printf("\nEscreva seu nome: ");
-  scanf("%[^\n]s", F2[0].nome_feedback);
-  fputs("Nome: ", feedback_arq);
-  fputs(F2[0].nome_feedback, feedback_arq);
-  fputc('\n', feedback_arq);
-
-  setbuf(stdin, NULL);
-  printf("\nDeixe uma nota (0 a 5): ");
-  scanf("%s", F2[0].nota_feedback);
-  fputs("Nota: ", feedback_arq);
-  fputs(F2[0].nota_feedback, feedback_arq);
-  fputc('\n', feedback_arq);
-
-  setbuf(stdin, NULL);
-  printf("\nAdicione um comentario: ");
-  scanf("%[^\n]s", F2[0].coment_feedback);
-  fputs("Feedback: ", feedback_arq);
-  fputs(F2[0].coment_feedback, feedback_arq);
-  fputc('\n', feedback_arq);
-  fputc('\n', feedback_arq);
-
+  perguntar_para_novo_feedback();
   fclose(feedback_arq);
-
-  setbuf(stdin, NULL);
+  return;
 }
 
 void mostra_contatos()
@@ -552,7 +542,7 @@ void menu()
 {
   int opcao;
   struct Cliente C[1];
-  struct Feedback_struct F[30];
+  struct Feedback F[30];
   struct Planos P[100];
 
   while (1)
@@ -578,9 +568,9 @@ void menu()
     if (opcao == 4)
       eventos();
     if (opcao == 5)
-      coleta_feedback(F);
+      coleta_feedback();
     if (opcao == 6)
-      verTodosOsFeedbacks(opcao);
+      ver_todos_os_feedbacks(opcao);
     if (opcao == 7)
       mostra_contatos();
     if (opcao == 9)
