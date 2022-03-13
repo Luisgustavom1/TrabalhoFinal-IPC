@@ -200,19 +200,22 @@ void mostrarCadastros()
   FILE *f;
   f = fopen("usuarios.txt", "r");
 
-  if (f == NULL) // verificando se o arquivo existe ou nao
+  if (!autenticacao())
   {
-    printf("Nenhum cadastro encontrado!\n");
-    return;
-  }
+    if (f == NULL) // verificando se o arquivo existe ou nao
+    {
+      printf("Nenhum cadastro encontrado!\n");
+      return;
+    }
 
-  char destino[100];
-  while (fgets(destino, 100, f) != NULL) // Imprimir todas as linhas do arquivo eventos; destino = onde vai ser armazenado a string; 100 = tam max da string; f = arq de onde sao lidos os dados
-  {
-    printf("%s", destino);
-  }
+    char destino[100];
+    while (fgets(destino, 100, f) != NULL) // Imprimir todas as linhas do arquivo eventos; destino = onde vai ser armazenado a string; 100 = tam max da string; f = arq de onde sao lidos os dados
+    {
+      printf("%s", destino);
+    }
 
-  fclose(f);
+    fclose(f);
+  }
 }
 
 void mostra_um_cadastro(int ID)
@@ -220,27 +223,30 @@ void mostra_um_cadastro(int ID)
   // Lendo último id usado
   FILE *f = fopen("usuarios.txt", "r");
 
-  if (f == NULL) // verificando se o arquivo existe ou nao
+  if (!autenticacao())
   {
-    printf("Nenhum cadastro encontrado!\n");
+    if (f == NULL) // verificando se o arquivo existe ou nao
+    {
+      printf("Nenhum cadastro encontrado!\n");
+      return;
+    }
+
+    char linha_atual[200];
+    int ultimoID = 0;
+
+    while (fgets(linha_atual, 200, f) != NULL)
+    {                                  // linha_atual= onde vai ser armaz a string lida; 200 = tam da string; f = arq lido
+      if (strstr(linha_atual, "ID: ")) // Se a linha conter "ID: " // strstr (onde eu vou buscar, qual string eu quero buscar)
+      {
+        ultimoID++;
+      }
+      if (ultimoID == ID)
+      {
+        printf("%s", linha_atual);
+      }
+    }
     return;
   }
-
-  char linha_atual[200];
-  int ultimoID = 0;
-
-  while (fgets(linha_atual, 200, f) != NULL)
-  {                                  // linha_atual= onde vai ser armaz a string lida; 200 = tam da string; f = arq lido
-    if (strstr(linha_atual, "ID: ")) // Se a linha conter "ID: " // strstr (onde eu vou buscar, qual string eu quero buscar)
-    {
-      ultimoID++;
-    }
-    if (ultimoID == ID)
-    {
-      printf("%s", linha_atual);
-    }
-  }
-  return;
 }
 
 void cadastro_de_planos(struct Planos T[])
@@ -254,95 +260,98 @@ void cadastro_de_planos(struct Planos T[])
     exit(1);
   }
 
-  int i, confirma;
-  for (i = 0;; i++)
+  if (!autenticacao())
   {
-    setbuf(stdin, NULL);
-    printf("Nome do plano:\n");
-    scanf("%[^\n]s", T[i].nome_do_plano);
-    setbuf(stdin, NULL);
-    printf("\n");
-
-    printf("Quantidade de camas (1 a 5):\n");
-    scanf("%[^\n]s", T[i].quantidade_de_camas);
-    setbuf(stdin, NULL);
-    printf("\n");
-
-    printf("Quantas refeições terá no hotel (1 a 6):\n");
-    scanf("%[^\n]s", T[i].refeicoes_no_hotel);
-    setbuf(stdin, NULL);
-    printf("\n");
-
-    printf("Ingressos para eventos:\n");
-    scanf("%[^\n]s", T[i].ingressos_para_eventos);
-    setbuf(stdin, NULL);
-    printf("\n");
-
-    printf("Transporte VIP (1 a 3 por dia):\n");
-    scanf("%[^\n]s", T[i].transporte_vip);
-    setbuf(stdin, NULL);
-    printf("\n");
-
-    printf("Quantidade de passagens (ida e volta):\n");
-    scanf("%[^\n]s", T[i].quantidade_passagens);
-    setbuf(stdin, NULL);
-    printf("\n");
-
-    printf("Tipo de veículo de transporte (passagens):\n");
-    scanf("%[^\n]s", T[i].tipo_de_passagem);
-    setbuf(stdin, NULL);
-    printf("\n");
-
-    printf("Tamanho do quarto (pequeno, médio, grande, VIP):\n");
-    scanf("%[^\n]s", T[i].tamanho_do_quarto);
-    setbuf(stdin, NULL);
-    printf("\n");
-
-    printf("Quantidade de banheiros (1 ou 2):\n");
-    scanf("%[^\n]s", T[i].quantidade_de_banheiros);
-    setbuf(stdin, NULL);
-    printf("\n");
-
-    printf("Quantidade de dias:\n");
-    scanf("%[^\n]s", T[i].quantidade_de_dias);
-    setbuf(stdin, NULL);
-    printf("\n");
-
-    printf("Nome do plano: %s\n", T[i].nome_do_plano);
-    printf("Quantidade de camas (1 a 5): %s\n", T[i].quantidade_de_camas);
-    printf("Quantas refeições terá no hotel (1 a 6): %s\n", T[i].refeicoes_no_hotel);
-    printf("Ingressos para eventos: %s\n", T[i].ingressos_para_eventos);
-    printf("Transporte VIP (1 a 3 por dia): %s\n", T[i].transporte_vip);
-    printf("Quantidade de passagens (ida e volta): %s\n", T[i].quantidade_passagens);
-    printf("Tipo de veículo de transporte (passagens): %s\n", T[i].tipo_de_passagem);
-    printf("Tamanho do quarto (pequeno, médio, grande, VIP): %s\n", T[i].tamanho_do_quarto);
-    printf("Quantidade de banheiros (1 ou 2): %s\n", T[i].quantidade_de_banheiros);
-    printf("Quantidade de dias: %s\n", T[i].quantidade_de_dias);
-    printf("\n");
-
-    printf("Confirmar cadastro ?\n");
-    printf("1 - Sim\n");
-    printf("2 - Nao\n");
-    scanf("%d", &confirma);
-
-    if (confirma == 1)
+    int i, confirma;
+    for (i = 0;; i++)
     {
-      fprintf(ponteiro_arquivo, "Nome do plano: %s\n", T[i].nome_do_plano);
-      fprintf(ponteiro_arquivo, "Quantidade de camas (1 a 5): %s\n", T[i].quantidade_de_camas);
-      fprintf(ponteiro_arquivo, "Quantas refeições terá no hotel (1 a 6): %s\n", T[i].refeicoes_no_hotel);
-      fprintf(ponteiro_arquivo, "Ingressos para eventos: %s\n", T[i].ingressos_para_eventos);
-      fprintf(ponteiro_arquivo, "Transporte VIP (1 a 3 por dia): %s\n", T[i].transporte_vip);
-      fprintf(ponteiro_arquivo, "Quantidade de passagens (ida e volta): %s\n", T[i].quantidade_passagens);
-      fprintf(ponteiro_arquivo, "Tipo de veículo de transporte (passagens): %s\n", T[i].tipo_de_passagem);
-      fprintf(ponteiro_arquivo, "Tamanho do quarto (pequeno, médio, grande, VIP): %s\n", T[i].tamanho_do_quarto);
-      fprintf(ponteiro_arquivo, "Quantidade de banheiros (1 ou 2): %s\n", T[i].quantidade_de_banheiros);
-      fprintf(ponteiro_arquivo, "Quantidade de dias: %s\n", T[i].quantidade_de_dias);
-      fprintf(ponteiro_arquivo, "\n");
-      fclose(ponteiro_arquivo);
-      return;
-    }
+      setbuf(stdin, NULL);
+      printf("Nome do plano:\n");
+      scanf("%[^\n]s", T[i].nome_do_plano);
+      setbuf(stdin, NULL);
+      printf("\n");
 
-    fclose(ponteiro_arquivo);
+      printf("Quantidade de camas (1 a 5):\n");
+      scanf("%[^\n]s", T[i].quantidade_de_camas);
+      setbuf(stdin, NULL);
+      printf("\n");
+
+      printf("Quantas refeições terá no hotel (1 a 6):\n");
+      scanf("%[^\n]s", T[i].refeicoes_no_hotel);
+      setbuf(stdin, NULL);
+      printf("\n");
+
+      printf("Ingressos para eventos:\n");
+      scanf("%[^\n]s", T[i].ingressos_para_eventos);
+      setbuf(stdin, NULL);
+      printf("\n");
+
+      printf("Transporte VIP (1 a 3 por dia):\n");
+      scanf("%[^\n]s", T[i].transporte_vip);
+      setbuf(stdin, NULL);
+      printf("\n");
+
+      printf("Quantidade de passagens (ida e volta):\n");
+      scanf("%[^\n]s", T[i].quantidade_passagens);
+      setbuf(stdin, NULL);
+      printf("\n");
+
+      printf("Tipo de veículo de transporte (passagens):\n");
+      scanf("%[^\n]s", T[i].tipo_de_passagem);
+      setbuf(stdin, NULL);
+      printf("\n");
+
+      printf("Tamanho do quarto (pequeno, médio, grande, VIP):\n");
+      scanf("%[^\n]s", T[i].tamanho_do_quarto);
+      setbuf(stdin, NULL);
+      printf("\n");
+
+      printf("Quantidade de banheiros (1 ou 2):\n");
+      scanf("%[^\n]s", T[i].quantidade_de_banheiros);
+      setbuf(stdin, NULL);
+      printf("\n");
+
+      printf("Quantidade de dias:\n");
+      scanf("%[^\n]s", T[i].quantidade_de_dias);
+      setbuf(stdin, NULL);
+      printf("\n");
+
+      printf("Nome do plano: %s\n", T[i].nome_do_plano);
+      printf("Quantidade de camas (1 a 5): %s\n", T[i].quantidade_de_camas);
+      printf("Quantas refeições terá no hotel (1 a 6): %s\n", T[i].refeicoes_no_hotel);
+      printf("Ingressos para eventos: %s\n", T[i].ingressos_para_eventos);
+      printf("Transporte VIP (1 a 3 por dia): %s\n", T[i].transporte_vip);
+      printf("Quantidade de passagens (ida e volta): %s\n", T[i].quantidade_passagens);
+      printf("Tipo de veículo de transporte (passagens): %s\n", T[i].tipo_de_passagem);
+      printf("Tamanho do quarto (pequeno, médio, grande, VIP): %s\n", T[i].tamanho_do_quarto);
+      printf("Quantidade de banheiros (1 ou 2): %s\n", T[i].quantidade_de_banheiros);
+      printf("Quantidade de dias: %s\n", T[i].quantidade_de_dias);
+      printf("\n");
+
+      printf("Confirmar cadastro ?\n");
+      printf("1 - Sim\n");
+      printf("2 - Nao\n");
+      scanf("%d", &confirma);
+
+      if (confirma == 1)
+      {
+        fprintf(ponteiro_arquivo, "Nome do plano: %s\n", T[i].nome_do_plano);
+        fprintf(ponteiro_arquivo, "Quantidade de camas (1 a 5): %s\n", T[i].quantidade_de_camas);
+        fprintf(ponteiro_arquivo, "Quantas refeições terá no hotel (1 a 6): %s\n", T[i].refeicoes_no_hotel);
+        fprintf(ponteiro_arquivo, "Ingressos para eventos: %s\n", T[i].ingressos_para_eventos);
+        fprintf(ponteiro_arquivo, "Transporte VIP (1 a 3 por dia): %s\n", T[i].transporte_vip);
+        fprintf(ponteiro_arquivo, "Quantidade de passagens (ida e volta): %s\n", T[i].quantidade_passagens);
+        fprintf(ponteiro_arquivo, "Tipo de veículo de transporte (passagens): %s\n", T[i].tipo_de_passagem);
+        fprintf(ponteiro_arquivo, "Tamanho do quarto (pequeno, médio, grande, VIP): %s\n", T[i].tamanho_do_quarto);
+        fprintf(ponteiro_arquivo, "Quantidade de banheiros (1 ou 2): %s\n", T[i].quantidade_de_banheiros);
+        fprintf(ponteiro_arquivo, "Quantidade de dias: %s\n", T[i].quantidade_de_dias);
+        fprintf(ponteiro_arquivo, "\n");
+        fclose(ponteiro_arquivo);
+        return;
+      }
+
+      fclose(ponteiro_arquivo);
+    }
   }
 }
 
