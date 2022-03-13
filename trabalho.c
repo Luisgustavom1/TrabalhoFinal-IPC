@@ -9,7 +9,8 @@ struct Planos
 
 struct Cliente
 {
-  char nome[100], cpf[30], nasc[20], profissao[50], nacionalidade[30], idade[10], sexo[20], id[30], endereco[100], cep[30], telefone[30], cidade[50], estado[50], pais[30], email[30];
+  char nome[100], cpf[30], nasc[20], profissao[50], nacionalidade[30], idade[10], sexo[20], rg[30], endereco[100], cep[30], telefone[30], cidade[50], estado[50], pais[30], email[30];
+  int id;
 };
 
 struct Feedback
@@ -18,6 +19,57 @@ struct Feedback
   char name[60];
   int stars;
 };
+
+void mostrarCadastros()
+{
+
+  FILE *f;
+  f = fopen("usuarios.txt", "r");
+
+  if (f == NULL) //verificando se o arquivo existe ou nao
+  {
+    printf("Nenhum cadastro encontrado!\n"); 
+    return;
+  }
+
+  char destino[100];
+  while (fgets(destino, 100, f) != NULL) // Imprimir todas as linhas do arquivo eventos; destino = onde vai ser armazenado a string; 100 = tam max da string; f = arq de onde sao lidos os dados
+  {
+      printf("%s", destino); 
+  }
+
+  fclose(f);
+}
+
+void mostra_um_cadastro(int ID)
+{
+  // Lendo último id usado
+  FILE *f = fopen("usuarios.txt", "r");
+  
+  if (f == NULL) //verificando se o arquivo existe ou nao
+  {
+    printf("Nenhum cadastro encontrado!\n"); 
+    return;
+  }
+
+      
+  char linha_atual[200];
+  int ultimoID = 0;
+
+  while (fgets(linha_atual, 200, f) != NULL)
+  { //linha_atual= onde vai ser armaz a string lida; 200 = tam da string; f = arq lido
+    if (strstr(linha_atual, "ID: ")) // Se a linha conter "ID: " // strstr (onde eu vou buscar, qual string eu quero buscar)
+    { 
+      ultimoID++;
+    }
+    if (ultimoID == ID)
+    {
+      printf("%s", linha_atual);
+    }
+  }
+  return;
+}
+
 
 int autenticacao()
 {
@@ -42,17 +94,11 @@ int autenticacao()
 
   return 0;
 }
-
 void cadastro(struct Cliente T[])
 {
   FILE *f;
 
   f = fopen("usuarios.txt", "a");
-  if (f == NULL)
-  {
-    printf("Arquivo nao pode ser aberto");
-    exit(1);
-  }
 
   int i, confirma;
   for (i = 0;; i++)
@@ -68,8 +114,8 @@ void cadastro(struct Cliente T[])
     setbuf(stdin, NULL);
     printf("\n");
 
-    printf("Identidade(apenas o numero):\n");
-    scanf("%[^\n]s", T[i].id);
+    printf("RG(apenas o numero):\n");
+    scanf("%[^\n]s", T[i].rg);
     setbuf(stdin, NULL);
     printf("\n");
 
@@ -135,7 +181,7 @@ void cadastro(struct Cliente T[])
 
     printf("Nome: %s\n", T[i].nome);
     printf("CPF: %s\n", T[i].cpf);
-    printf("Identidade: %s\n", T[i].id);
+    printf("RG: %s\n", T[i].rg);
     printf("Data de nascimento: %s\n", T[i].nasc);
     printf("Nacionalidade: %s\n", T[i].nacionalidade);
     printf("Idade: %s\n", T[i].idade);
@@ -157,9 +203,24 @@ void cadastro(struct Cliente T[])
 
     if (confirma == 1)
     {
+      // Lendo último id usado
+      fclose(f); f = fopen("usuarios.txt", "r");
+      char linha_atual[200];
+      int ultimoID = 0;
+
+      while (fgets(linha_atual, 200, f) != NULL)
+        if (strstr(linha_atual, "ID: ")) // Se a linha conter "ID: "
+          ultimoID++;
+      
+      ultimoID++;
+            
+      // Escrevendo
+      fclose(f); f = fopen("usuarios.txt", "a");
+      
+      fprintf(f, "ID: %d\n", ultimoID);
       fprintf(f, "Nome: %s\n", T[i].nome);
       fprintf(f, "CPF: %s\n", T[i].cpf);
-      fprintf(f, "Identidade: %s\n", T[i].id);
+      fprintf(f, "Identidade: %s\n", T[i].rg);
       fprintf(f, "Data de nascimento: %s\n", T[i].nasc);
       fprintf(f, "Nacionalidade: %s\n", T[i].nacionalidade);
       fprintf(f, "Idade: %s\n", T[i].idade);
@@ -542,7 +603,7 @@ void mostra_contatos()
 
 void menu()
 {
-  int opcao;
+  int opcao, ID;
   struct Cliente C[1];
   struct Feedback F[30];
   struct Planos P[100];
@@ -557,8 +618,10 @@ void menu()
     printf("\n5- Dar um feedback");
     printf("\n6- Ver feedback");
     printf("\n7- Ver contatos do Resort");
-    printf("\n9- Sair ");
-    printf("\nDigite opcao: ");
+    printf("\n8- Todos os cadastros");
+    printf("\n9- Mostrar 1 cadastro");
+    printf("\n0- Sair ");
+    printf("\nDigite opção: ");
     scanf("%d", &opcao);
 
     if (opcao == 1)
@@ -575,7 +638,14 @@ void menu()
       mostra_feedbacks(opcao);
     if (opcao == 7)
       mostra_contatos();
-    if (opcao == 9)
+    if (opcao == 8)
+      mostrarCadastros();
+    if (opcao == 9) {
+      printf("Digite o ID do cadastro a ser mostrado => ");
+      scanf("%d", &ID);
+      mostra_um_cadastro(ID);
+    }
+    if (opcao == 0)
       return;
   }
 }
