@@ -540,29 +540,11 @@ void coleta_feedback()
 
 void mensagem_de_nenhum_feedback()
 {
-  printf("======================\n");
-  printf("Nenhum feedback encontrado!! Nos deixe uma sugestão ou crítica acessando a opção 5!!\n");
-  printf("======================\n");
-}
+  printf("----------------------\n");
+  printf("Nenhum feedback encontrado!! Nos deixe uma sugestao ou critica acessando a opcao 4.\n");
+  printf("----------------------\n");
 
-void perguntar_para_novo_feedback()
-{
-  int opcao = 0;
-  struct Feedback NovoFeedback[1];
-
-  printf("\nDeseja deixar seu feedback para nos?\n");
-  printf("1- Deixar feedback\n");
-  printf("2- Voltar ao menu\n");
-  printf("Digite opção: ");
-  scanf("%d", &opcao);
-  if (opcao == 2)
-  {
-    return;
-  }
-  else
-  {
-    coleta_feedback(NovoFeedback);
-  }
+  return;
 }
 
 void mostra_feedbacks()
@@ -578,27 +560,26 @@ void mostra_feedbacks()
     return;
   }
 
-  printf("Confira os feedbacks que nossos hospedes deixaram!\n");
+  printf("\nConfira os feedbacks que nossos hospedes deixaram!");
   while (fscanf(feedback_arq, "Nome: %60[^\n]\n", F.name) != EOF)
   {
     fscanf(feedback_arq, "Nota: %d\n", &F.stars);
     fscanf(feedback_arq, "Feedback: %100[^\n]\n", F.feedback);
 
-    printf("======================\n");
-    printf("Nome: %s - %d estrelas:\n", F.name, F.stars);
-    printf("- %s\n", F.feedback);
-    printf("======================\n");
+    printf("\n----------------------");
+    printf("\nNome: %s - %d estrelas:", F.name, F.stars);
+    printf("\n- %s", F.feedback);
+    printf("\n----------------------\n");
   }
 
-  perguntar_para_novo_feedback();
   fclose(feedback_arq);
   return;
 }
 
 void mostra_contatos()
 {
-  printf("\nInstagram: resort_instagram\n");
-  printf("Gmail: resort@gmail.com\n");
+  printf("\nInstagram: new_horizon_resort_instagram\n");
+  printf("Gmail: new_horizon_resort@gmail.com\n");
   printf("Telefone: (34)99877-0392\n");
 }
 
@@ -625,7 +606,7 @@ void menu()
     printf("\n           Area do Administrador             ");
     printf("\n----------------------------------------");
     printf("\n7- Cadastrar um plano");
-    printf("\n8- Mostrar Todos os usuários cadastrados");
+    printf("\n8- Mostrar Todos os usuarios cadastrados");
     printf("\n9- Mostrar 1 usuario");
     printf("\n0- Sair ");
     printf("\nDigite opcao: ");
