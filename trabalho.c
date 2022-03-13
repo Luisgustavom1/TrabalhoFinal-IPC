@@ -173,6 +173,7 @@ void cadastro(struct Cliente T[])
       fprintf(f, "Pais: %s\n", T[i].pais);
       fprintf(f, "E-mail: %s\n", T[i].email);
       fprintf(f, "\n");
+      fclose(f);
       return;
     }
 
@@ -275,6 +276,7 @@ void cadastro_de_planos(struct Planos T[])
       fprintf(ponteiro_arquivo, "Quantidade de banheiros (1 ou 2): %s\n", T[i].quantidade_de_banheiros);
       fprintf(ponteiro_arquivo, "Quantidade de dias: %s\n", T[i].quantidade_de_dias);
       fprintf(ponteiro_arquivo, "\n");
+      fclose(ponteiro_arquivo);
       return;
     }
 
@@ -282,11 +284,39 @@ void cadastro_de_planos(struct Planos T[])
   }
 }
 
+void mostrar_todos_os_planos(struct Planos T[])
+{
+  FILE *ponteiro_arquivo;
+  int i;
+  char leitura, output[10000];
+
+  ponteiro_arquivo = fopen("planos.txt", "r");
+
+  if (ponteiro_arquivo == NULL)
+  {
+    printf("Erro na abertura do arquivo");
+    exit(1);
+  }
+  printf("\n\nMostrando planos...\n\n");
+  i = 0;
+  leitura = fgetc(ponteiro_arquivo);
+  while (leitura != EOF)
+  {
+    output[i] = leitura;
+    printf("%c", output[i]);
+    i++;
+    leitura = fgetc(ponteiro_arquivo);
+  }
+
+  return;
+  fclose(ponteiro_arquivo);
+}
+
 void eventos()
 {
   // Os eventos serão guardados em um arquivo para melhor organização
   const int TAMANHO_BUFFER = 256; // Máximo de caracteres que podem ser inseridos por linha
-  printf("\n");
+
   FILE *eventos = fopen("eventos", "r");
   if (eventos == NULL) // Caso o arquivo "eventos" não exista, criá-lo
     eventos = fopen("eventos", "w");
@@ -307,7 +337,7 @@ void eventos()
       printf("Nenhum evento foi encontrado\n");
 
     // Menu de opções
-    printf("\n\nComandos:\n");
+    printf("\nComandos:\n");
     printf("Qualquer tecla - Recarregar eventos\n");
     printf("1 - Criar um evento\n");
     if (ftell(eventos) != 0)
@@ -315,8 +345,8 @@ void eventos()
       printf("2 - Remover um evento\n");
       printf("3 - Remover todos os eventos\n");
     }
-    printf("\n\n9 - Voltar\n");
-    //
+    printf("\n9 - Voltar\n");
+
     printf("Digite o número da opção => ");
     setbuf(stdin, NULL); // Evitar que o código entre em loop
     opcao = -1;          // Evitar erros caso o usuário não insira um número
@@ -332,7 +362,7 @@ void eventos()
     if (opcao == 1)
     { // Adicionar um evento
       // O usuário ditará um evento por linha. Para que ele saia do modo de digitação, basta digitar "\sair".
-      if (autenticacao() == 0)
+      if (!autenticacao())
       {
         fclose(eventos);
         eventos = fopen("eventos", "a");
@@ -354,7 +384,7 @@ void eventos()
     if (opcao == 2 && ftell(eventos) != 0)
     { // Remover um evento
       // Todos os eventos serão listados com um número de referência na frente. O usuário digtará um número e o evento correspondente será excluído
-      if (autenticacao() == 0)
+      if (!autenticacao())
       {
         char arquivo_original[TAMANHO_BUFFER * 16]; // Funciona com até 16 linhas de eventos garantidamente, mude o número para suportar mais linhas
         int linha_deletar, linha_atual, i, c;
@@ -394,7 +424,7 @@ void eventos()
 
     if (opcao == 3 && ftell(eventos) != 0)
     { // Remover todos os eventos
-      if (autenticacao() == 0)
+      if (!autenticacao())
       {
         char confirm[3];
         confirm[0] = '\0'; // Evitar que o while não seja executado na segunda vez que a opção é selecionada
@@ -414,34 +444,6 @@ void eventos()
       }
     }
   }
-}
-
-void mostrar_todos_os_planos(struct Planos T[])
-{
-  FILE *ponteiro_arquivo;
-  int i;
-  char leitura, output[10000];
-
-  ponteiro_arquivo = fopen("planos.txt", "r");
-
-  if (ponteiro_arquivo == NULL)
-  {
-    printf("Erro na abertura do arquivo");
-    exit(1);
-  }
-  printf("\n\nMostrando planos...\n\n");
-  i = 0;
-  leitura = fgetc(ponteiro_arquivo);
-  while (leitura != EOF)
-  {
-    output[i] = leitura;
-    printf("%c", output[i]);
-    i++;
-    leitura = fgetc(ponteiro_arquivo);
-  }
-
-  return;
-  fclose(ponteiro_arquivo);
 }
 
 void coleta_feedback()
@@ -501,7 +503,7 @@ void perguntar_para_novo_feedback()
   }
 }
 
-void ver_todos_os_feedbacks()
+void mostra_feedbacks()
 {
   struct Feedback F;
 
@@ -519,7 +521,7 @@ void ver_todos_os_feedbacks()
   {
     fscanf(feedback_arq, "Nota: %d\n", &F.stars);
     fscanf(feedback_arq, "Feedback: %100[^\n]\n", F.feedback);
-    
+
     printf("======================\n");
     printf("Nome: %s - %d estrelas:\n", F.name, F.stars);
     printf("- %s\n", F.feedback);
@@ -548,15 +550,15 @@ void menu()
   while (1)
   {
     printf("\nBem vindo ao Sistema de um resort ");
-    printf("\n1- Cadastrar clientes");
+    printf("\n1- Cadastrar no sistema do nosso resort");
     printf("\n2- Cadastrar um plano");
     printf("\n3- Mostrar todos os planos");
-    printf("\n4- Mostrar todos os lazeres/atrações/eventos");
+    printf("\n4- Mostrar todos os lazeres/atracoes/eventos");
     printf("\n5- Dar um feedback");
     printf("\n6- Ver feedback");
     printf("\n7- Ver contatos do Resort");
     printf("\n9- Sair ");
-    printf("\nDigite opção: ");
+    printf("\nDigite opcao: ");
     scanf("%d", &opcao);
 
     if (opcao == 1)
@@ -570,7 +572,7 @@ void menu()
     if (opcao == 5)
       coleta_feedback();
     if (opcao == 6)
-      ver_todos_os_feedbacks(opcao);
+      mostra_feedbacks(opcao);
     if (opcao == 7)
       mostra_contatos();
     if (opcao == 9)
