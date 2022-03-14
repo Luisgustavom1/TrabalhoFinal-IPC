@@ -24,7 +24,7 @@ int autenticacao()
 {
   // Solicita que o usuário digite uma senha até ele acertar. Quando ele acerta, é retornado 0; quando ele opta por sair, é retornado 1.
   // Não tem criptografia nenhuma, é só para demonstrar
-  char senha[10] = {};
+  char senha[10];
   printf("Para executar esse comando, é necessário informar a senha de administração.\n");
 
   while (strcmp(senha, "senha") != 0)
@@ -418,7 +418,7 @@ void eventos()
       printf("2 - Remover um evento\n");
       printf("3 - Remover todos os eventos\n");
     }
-    printf("\n0 - Voltar\n");
+    printf("0 - Voltar\n");
 
     printf("Digite o número da opção => ");
     setbuf(stdin, NULL); // Evitar que o código entre em loop
@@ -596,38 +596,38 @@ void mostra_contatos()
 
 void perguntas_frequentes()
 {
-    int opcao;
-    while(1)
-    {
-      printf("\nDigite a opção correspondente a pergunta\n");
-      printf("\n1. Como entrar em contato com a New Horizon Resort?\n");
-      printf("2. Quais os períodos de baixa e alta temporada?\n");
-      printf("3. O que fazer se houver um imprevisto e não puder viajar?\n");
-      printf("4. Por que confiar na New Horizon resort?\n");
-      printf("5. Qual o horário de atendimento da New Horizon Resort?\n");
-      printf("6. Quais os recursos que a New Horizon Resort possui para pais com ciranças pequenas?\n");
-      printf("7. Como funciona os preços para hóspedes menores de idade?\n");
-      printf("0. Voltar\n");
+  int opcao;
+  while(1)
+  {
+    printf("\nDigite a opção correspondente à pergunta\n");
+    printf("\n1. Como entrar em contato com a New Horizon Resort?\n");
+    printf("2. Quais os períodos de baixa e alta temporada?\n");
+    printf("3. O que fazer se houver um imprevisto e não puder viajar?\n");
+    printf("4. Por que confiar na New Horizon resort?\n");
+    printf("5. Qual o horário de atendimento da New Horizon Resort?\n");
+    printf("6. Quais os recursos que a New Horizon Resort possui para pais com ciranças pequenas?\n");
+    printf("7. Como funciona os preços para hóspedes menores de idade?\n");
+    printf("0. Voltar\n");
       
-      scanf("%d", &opcao);
+    scanf("%d", &opcao);
       
-      if (opcao == 1)
-        printf("Voce pode entrar em contato conosco através do nosso gmail, telefone ou instagram, para acessálos, basta digitar a opção 6 na \'Área do ciente\'\n");
-      if (opcao == 2)
-        printf("Os períodos de alta temporada no brasil são comumentes o Natal, réveillon, os meses de janeiro e julho, bem como os feriados nacionais.\n\nOs periodos de baixa temporada no brasil compreendem os meses de fevereiro a junho, e agosto até o dia 20 de dezembro.(Nos feriados que acontecem nos meses citados, os valores são os mesmos da alta temporada).\n");
-      if (opcao == 3)
-        printf("Relações sólidas. Com a expertise de mais de dez anos no mercado de resorts e com forte relação junto aos principais fornecedores do segmento, nossa equipe conhece todos os trâmites do setor. Com isso, é capaz de oferecer soluções com agilidade e segurança a todos os nossos clientes. Para quaisquer dúvidas e imprevistos, o cliente pode contatar o suporte da New Horizon Resort a qualquer momento.\n");
-      if (opcao == 4)
-        printf("Temos os melhores preços. Com uma larga experiência no universo da hotelaria de alto padrão e com o reconhecimento dos principais fornecedores e sites de reserva do País, a New Horizon Resort tem os melhores preços para a venda de planos e acomodações do Brasil. Por isso, oferece a melhor experiencia de viagem para o cliente.\n");
-      if (opcao == 5)
-        printf("O horário de atendimento da New Horizon Resort é de segunda-feira a segunda-feira, 24horas por dia, sete dias por semana. Nossa lema é nunca parar de atendê-lo.\n");
-      if (opcao == 6)
-        printf("Teremos disponibilizados em toda a área do Resort, serviços com monitores para crianças acima dos 5 anos, e serviços de babás para bebês até menores de 4 anos, bem como a disponibilização de berços, carrinhos, e fraldário se os pais assim os solicitarem na portaria.\n");
-      if (opcao == 7)
-        printf("Os hóspedes de até 4 anos estão isentos da diária, crianças de 5 a 12 pagarão meia diária e adolescentes de 13 a 18 anos, pagarão o valor de uma diária.\n");
-      if (opcao == 0)
-        return;
-    }
+    if (opcao == 1)
+      printf("Você pode entrar em contato conosco através do nosso gmail, telefone ou instagram. Para acessá-los, basta digitar a opção 6 na \'Área do ciente\'\n");
+    if (opcao == 2)
+      printf("Os períodos de alta temporada no Brasil são comumentes o Natal, réveillon, os meses de janeiro e julho, bem como os feriados nacionais.\n\nOs periodos de baixa temporada no Brasil compreendem os meses de fevereiro a junho, e agosto até o dia 20 de dezembro.(Nos feriados que acontecem nos meses citados, os valores são os mesmos da alta temporada).\n");
+    if (opcao == 3)
+      printf("Relações sólidas. Com a expertise de mais de dez anos no mercado de resorts e com forte relação junto aos principais fornecedores do segmento, nossa equipe conhece todos os trâmites do setor. Com isso, é capaz de oferecer soluções com agilidade e segurança a todos os nossos clientes. Para quaisquer dúvidas e imprevistos, o cliente pode contatar o suporte da New Horizon Resort a qualquer momento.\n");
+    if (opcao == 4)
+      printf("Temos os melhores preços. Com uma larga experiência no universo da hotelaria de alto padrão e com o reconhecimento dos principais fornecedores e sites de reserva do País, a New Horizon Resort tem os melhores preços para a venda de planos e acomodações do Brasil. Por isso, oferece a melhor experiencia de viagem para o cliente.\n");
+    if (opcao == 5)
+      printf("O horário de atendimento da New Horizon Resort é de segunda-feira a segunda-feira, 24horas por dia, sete dias por semana. Nosso lema é nunca parar de atendê-lo.\n");
+    if (opcao == 6)
+      printf("Teremos disponibilizados em toda a área do Resort, serviços com monitores para crianças acima dos 5 anos, e serviços de babás para bebês até menores de 4 anos, bem como a disponibilização de berços, carrinhos, e fraldário se os pais assim os solicitarem na portaria.\n");
+    if (opcao == 7)
+      printf("Os hóspedes de até 4 anos estão isentos da diária, crianças de 5 a 12 pagarão meia diária e adolescentes de 13 a 18 anos, pagarão o valor de uma diária.\n");
+    if (opcao == 0)
+      return;
+  }
 }
 
 void menu()
