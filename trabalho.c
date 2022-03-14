@@ -191,6 +191,7 @@ void cadastro_de_cliente(struct Cliente T[])
     }
 
     fclose(f);
+    return;
   }
 }
 
@@ -351,6 +352,7 @@ void cadastro_de_planos(struct Planos T[])
       }
 
       fclose(ponteiro_arquivo);
+      return;
     }
   }
 }
