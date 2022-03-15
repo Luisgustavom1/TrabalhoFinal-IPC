@@ -66,3 +66,20 @@ Estado: 54532
 Pais: 64536
 E-mail: 432543
 
+ID: 7
+Nome: sexo
+CPF: 1
+Identidade: 1
+Data de nascimento: 1
+Nacionalidade: 1
+Idade: 1
+Sexo: 1
+Profissao: 1
+Endereco: 1
+CEP: 1
+Telefone: 1
+Cidade: 1
+Estado: 1
+Pais: 1
+E-mail: 1
+
