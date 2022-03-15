@@ -1,0 +1,26 @@
+ID: 1
+Nome do plano: 1
+Quantidade de camas (1 a 5): 1
+Quantas refeições terá no hotel (1 a 6): 1
+Ingressos para eventos: 1
+Transporte VIP (1 a 3 por dia): 1
+Quantidade de passagens (ida e volta): 1
+Tipo de veículo de transporte (passagens): 1
+Tamanho do quarto (pequeno, médio, grande, VIP): 1
+Quantidade de banheiros (1 ou 2): 1
+Quantidade de dias: 1
+Preço do plano: R$ 1000.00
+
+ID: 2
+Nome do plano: 1
+Quantidade de camas (1 a 5): 1
+Quantas refeições terá no hotel (1 a 6): 1
+Ingressos para eventos: 
+Transporte VIP (1 a 3 por dia): 1
+Quantidade de passagens (ida e volta): 1
+Tipo de veículo de transporte (passagens): 1
+Tamanho do quarto (pequeno, médio, grande, VIP): 1
+Quantidade de banheiros (1 ou 2): 1
+Quantidade de dias: 1
+Preço do plano (total): R$ 5000.00
+

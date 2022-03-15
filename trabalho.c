@@ -339,6 +339,11 @@ void cadastro_de_planos(struct Planos T[])
       setbuf(stdin, NULL);
       printf("\n");
 
+      printf("Preço do plano (total):\nR$ ");
+      scanf("%lf", &T[i].preco_do_plano);
+      setbuf(stdin, NULL);
+      printf("\n");
+
       printf("Nome do plano: %s\n", T[i].nome_do_plano);
       printf("Quantidade de camas (1 a 5): %s\n", T[i].quantidade_de_camas);
       printf("Quantas refeições terá no hotel (1 a 6): %s\n", T[i].refeicoes_no_hotel);
@@ -349,6 +354,7 @@ void cadastro_de_planos(struct Planos T[])
       printf("Tamanho do quarto (pequeno, médio, grande, VIP): %s\n", T[i].tamanho_do_quarto);
       printf("Quantidade de banheiros (1 ou 2): %s\n", T[i].quantidade_de_banheiros);
       printf("Quantidade de dias: %d\n", T[i].quantidade_de_dias);
+      printf("Preço do plano: R$ %.2lf\n", T[i].preco_do_plano);
       printf("\n");
 
       printf("Confirmar cadastro ?\n");
@@ -387,6 +393,7 @@ void cadastro_de_planos(struct Planos T[])
         fprintf(ponteiro_arquivo, "Tamanho do quarto (pequeno, médio, grande, VIP): %s\n", T[i].tamanho_do_quarto);
         fprintf(ponteiro_arquivo, "Quantidade de banheiros (1 ou 2): %s\n", T[i].quantidade_de_banheiros);
         fprintf(ponteiro_arquivo, "Quantidade de dias: %d\n", T[i].quantidade_de_dias);
+        fprintf(ponteiro_arquivo, "Preço do plano (total): R$ %.2lf\n", T[i].preco_do_plano);
         fprintf(ponteiro_arquivo, "\n");
         fclose(ponteiro_arquivo);
         return;
