@@ -4,7 +4,9 @@
 
 struct Planos
 {
-  char nome_do_plano[100], quantidade_de_camas[10], refeicoes_no_hotel[6], ingressos_para_eventos[100], transporte_vip[10], quantidade_passagens[10], tipo_de_passagem[100], tamanho_do_quarto[100], quantidade_de_banheiros[10], quantidade_de_dias[30];
+  char nome_do_plano[100], quantidade_de_camas[10], refeicoes_no_hotel[6], ingressos_para_eventos[100], transporte_vip[10], quantidade_passagens[10], tipo_de_passagem[100], tamanho_do_quarto[100], quantidade_de_banheiros[10];
+  int quantidade_de_dias;
+  double preco_do_plano;
 };
 
 struct Cliente
@@ -23,16 +25,18 @@ struct Feedback
 // Normalmente a função "strrev" não está presente na biblioteca padrão do gcc, então para evitar problemas em diferentes compiladores, ela é definida aqui.
 char *strrev(char *s)
 {
-  if (s && *s) { // s = string inteira; *s = posição atual do ponteiro (primeiro caractere da string)
+  if (s && *s)
+  {                                      // s = string inteira; *s = posição atual do ponteiro (primeiro caractere da string)
     char *b = s, *e = s + strlen(s) - 1; // b = Ponteireo no primeiro caractere; e = Ponteiro no último caractere
-    while (b < e) { // While que leva o último caractere para a primeira posição e o primeiro para a última. Quando chegar na metade da string, "b" estará em uma posição maior ou superior a "e" e o laço parará.
+    while (b < e)
+    { // While que leva o último caractere para a primeira posição e o primeiro para a última. Quando chegar na metade da string, "b" estará em uma posição maior ou superior a "e" e o laço parará.
       char foo;
       foo = *b;
       *b++ = *e;
       *e-- = foo;
     }
   }
-  
+
   return s;
 }
 
@@ -178,7 +182,7 @@ void cadastro_de_cliente(struct Cliente T[])
       while (fgets(linha_atual, 200, f) != NULL)
         if (strstr(linha_atual, "ID: ")) // Se a linha conter "ID: "
           ultimoID = strtol(strrev(linha_atual), &lixo, 10);
-          // A função strtol extrai o primeiro número de uma string se ele for a primeira coisa presente, então devolve o resto dela em *lixo. Para que o número seja a primeira coisa em "ID: %d", a função strrev escreverá a string de trás para frente, fazendo com que o número do ID ganhe evidência.
+      // A função strtol extrai o primeiro número de uma string se ele for a primeira coisa presente, então devolve o resto dela em *lixo. Para que o número seja a primeira coisa em "ID: %d", a função strrev escreverá a string de trás para frente, fazendo com que o número do ID ganhe evidência.
 
       ultimoID++;
 
@@ -331,7 +335,7 @@ void cadastro_de_planos(struct Planos T[])
       printf("\n");
 
       printf("Quantidade de dias:\n");
-      scanf("%[^\n]s", T[i].quantidade_de_dias);
+      scanf("%d", &T[i].quantidade_de_dias);
       setbuf(stdin, NULL);
       printf("\n");
 
@@ -344,7 +348,7 @@ void cadastro_de_planos(struct Planos T[])
       printf("Tipo de veículo de transporte (passagens): %s\n", T[i].tipo_de_passagem);
       printf("Tamanho do quarto (pequeno, médio, grande, VIP): %s\n", T[i].tamanho_do_quarto);
       printf("Quantidade de banheiros (1 ou 2): %s\n", T[i].quantidade_de_banheiros);
-      printf("Quantidade de dias: %s\n", T[i].quantidade_de_dias);
+      printf("Quantidade de dias: %d\n", T[i].quantidade_de_dias);
       printf("\n");
 
       printf("Confirmar cadastro ?\n");
@@ -354,6 +358,25 @@ void cadastro_de_planos(struct Planos T[])
 
       if (confirma == 1)
       {
+
+        // Lendo último id usado
+        fclose(ponteiro_arquivo);
+        ponteiro_arquivo = fopen("planos.txt", "r");
+        char linha_atual[200], *lixo;
+        int ultimoID = 0;
+
+        while (fgets(linha_atual, 200, ponteiro_arquivo) != NULL)
+          if (strstr(linha_atual, "ID: ")) // Se a linha conter "ID: "
+            ultimoID = strtol(strrev(linha_atual), &lixo, 10);
+        // A função strtol extrai o primeiro número de uma string se ele for a primeira coisa presente, então devolve o resto dela em *lixo. Para que o número seja a primeira coisa em "ID: %d", a função strrev escreverá a string de trás para frente, fazendo com que o número do ID ganhe evidência.
+
+        ultimoID++;
+
+        // Escrevendo
+        fclose(ponteiro_arquivo);
+        ponteiro_arquivo = fopen("planos.txt", "a");
+
+        fprintf(ponteiro_arquivo, "ID: %d\n", ultimoID);
         fprintf(ponteiro_arquivo, "Nome do plano: %s\n", T[i].nome_do_plano);
         fprintf(ponteiro_arquivo, "Quantidade de camas (1 a 5): %s\n", T[i].quantidade_de_camas);
         fprintf(ponteiro_arquivo, "Quantas refeições terá no hotel (1 a 6): %s\n", T[i].refeicoes_no_hotel);
@@ -363,7 +386,7 @@ void cadastro_de_planos(struct Planos T[])
         fprintf(ponteiro_arquivo, "Tipo de veículo de transporte (passagens): %s\n", T[i].tipo_de_passagem);
         fprintf(ponteiro_arquivo, "Tamanho do quarto (pequeno, médio, grande, VIP): %s\n", T[i].tamanho_do_quarto);
         fprintf(ponteiro_arquivo, "Quantidade de banheiros (1 ou 2): %s\n", T[i].quantidade_de_banheiros);
-        fprintf(ponteiro_arquivo, "Quantidade de dias: %s\n", T[i].quantidade_de_dias);
+        fprintf(ponteiro_arquivo, "Quantidade de dias: %d\n", T[i].quantidade_de_dias);
         fprintf(ponteiro_arquivo, "\n");
         fclose(ponteiro_arquivo);
         return;
@@ -615,7 +638,7 @@ void mostra_contatos()
 void perguntas_frequentes()
 {
   int opcao;
-  while(1)
+  while (1)
   {
     printf("\nDigite a opção correspondente à pergunta\n");
     printf("\n1. Como entrar em contato com a New Horizon Resort?\n");
@@ -626,9 +649,9 @@ void perguntas_frequentes()
     printf("6. Quais os recursos que a New Horizon Resort possui para pais com ciranças pequenas?\n");
     printf("7. Como funciona os preços para hóspedes menores de idade?\n");
     printf("0. Voltar\n");
-      
+
     scanf("%d", &opcao);
-      
+
     if (opcao == 1)
       printf("Você pode entrar em contato conosco através do nosso gmail, telefone ou instagram. Para acessá-los, basta digitar a opção 6 na \'Área do ciente\'\n");
     if (opcao == 2)
