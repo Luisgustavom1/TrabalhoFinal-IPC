@@ -669,7 +669,7 @@ void menu()
     if (opcao == 4)
       coleta_feedback();
     if (opcao == 5)
-      mostra_feedbacks(opcao);
+      mostra_feedbacks();
     if (opcao == 6)
       mostra_contatos();
     if (opcao == 7)
