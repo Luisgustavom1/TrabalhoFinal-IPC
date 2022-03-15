@@ -634,7 +634,6 @@ void menu()
 {
   int opcao, ID;
   struct Cliente C[1];
-  struct Feedback F[30];
   struct Planos P[100];
 
   while (1)
