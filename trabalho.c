@@ -2,6 +2,10 @@
 #include <stdlib.h>
 #include <string.h>
 
+#define TAMANHO_BUFFER 256
+#define MAX_LINHAS 16
+
+
 struct Planos
 {
   char nome_do_plano[100], quantidade_de_camas[10], refeicoes_no_hotel[6], ingressos_para_eventos[100], transporte_vip[10], quantidade_passagens[10], tipo_de_passagem[100], tamanho_do_quarto[100], quantidade_de_banheiros[10];
@@ -38,6 +42,34 @@ char *strrev(char *s)
   }
 
   return s;
+}
+
+// Deleta 1 linha de um arquivo. Uso: del_linha(número da linha a ser deletada, "nome do arquivo")
+void del_linha(int linha_deletar, char *nome_arquivo)
+{
+  FILE *arq = fopen(nome_arquivo, "r");
+  char arq_linha[TAMANHO_BUFFER], arq_origin[TAMANHO_BUFFER * 16];
+  int n_linhas=0, linha_atual=1, c=0;
+
+  while (fgets(arq_linha, TAMANHO_BUFFER, arq) != NULL)
+  {
+    strcat(arq_origin, arq_linha); // Transferindo o conteúdo do arquivo para o vetor "arquivo_original"
+    n_linhas++;
+  }
+
+  fclose(arq);
+  arq = fopen(nome_arquivo, "w"); // Apagar o conteúdo do arquivo
+
+  while (linha_atual <= n_linhas)
+  {
+    if (linha_atual != linha_deletar) // Se a linha atual for igual à linha que será deletada, nada será impresso
+      fprintf(arq, "%c", arq_origin[c]);
+    if (arq_origin[c] == '\n')
+      linha_atual++;
+    c++;
+  }
+  fclose(arq);
+  return;
 }
 
 int autenticacao()
@@ -436,8 +468,6 @@ void mostrar_todos_os_planos(struct Planos T[])
 void eventos()
 {
   // Os eventos serão guardados em um arquivo para melhor organização
-  const int TAMANHO_BUFFER = 256; // Máximo de caracteres que podem ser inseridos por linha
-
   FILE *eventos = fopen("eventos", "r");
   if (eventos == NULL) // Caso o arquivo "eventos" não exista, criá-lo
     eventos = fopen("eventos", "w");
@@ -507,11 +537,8 @@ void eventos()
       // Todos os eventos serão listados com um número de referência na frente. O usuário digtará um número e o evento correspondente será excluído
       if (!autenticacao())
       {
-        char arquivo_original[TAMANHO_BUFFER * 16]; // Funciona com até 16 linhas de eventos garantidamente, mude o número para suportar mais linhas
-        int linha_deletar, linha_atual, i, c;
-        for (i = 0; i < TAMANHO_BUFFER * 16; ++i)
-          arquivo_original[i] = '\0';
-        linha_atual = i = c = 0;
+        char arquivo_original[TAMANHO_BUFFER * MAX_LINHAS];
+        int linha_deletar, i=1;
 
         rewind(eventos);
         while (fgets(eventos_contents, TAMANHO_BUFFER, eventos) != NULL)
@@ -523,23 +550,10 @@ void eventos()
         printf("\n");
 
         printf("\nInsira o número do evento que será deletado => ");
-        linha_deletar = -1;
-        while (linha_deletar >= i || linha_deletar < 0) // Impedir que números fora do intervalo sejam escritos
+        linha_deletar = -1; // Evitar bugs na segunda vez que a opção é chamada
+        while (linha_deletar >= i || linha_deletar <= 0) // Impedir que números fora do intervalo sejam escritos
           scanf("%d", &linha_deletar);
-
-        fclose(eventos);
-        eventos = fopen("eventos", "w");
-        fclose(eventos); // Apagar o conteúdo do arquivo
-        eventos = fopen("eventos", "a");
-
-        while (linha_atual < i)
-        {
-          if (linha_atual != linha_deletar) // Se a linha atual for igual à linha que será deletada, nada será impresso
-            fprintf(eventos, "%c", arquivo_original[c]);
-          if (arquivo_original[c] == '\n')
-            linha_atual++;
-          c++;
-        }
+        del_linha(linha_deletar, "eventos");
       }
     }
 
