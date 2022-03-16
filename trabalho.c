@@ -306,41 +306,6 @@ void mostra_um_cadastro(int ID)
   }
 }
 
-void deleta_cadastro(int ID)
-{
-  if (!autenticacao())
-  {
-    FILE *usuario_arq = fopen("usuarios.txt", "r");
-    char linha_atual[TAMANHO_BUFFER], *lixo;
-    int ultimoID=0, i=1, start=-1, end=0;
-  
-    while (fgets(linha_atual, TAMANHO_BUFFER, usuario_arq) != NULL)
-    {
-      if (strstr(linha_atual, "ID: ")) // Se a linha conter "ID: "
-        ultimoID = strtol(strrev(linha_atual), &lixo, 10);
-
-      if (ultimoID == ID && start == -1)
-        start=i;
-      if (ultimoID != ID && start > -1 && end == 0)
-        end=i;
-      i++;
-    }
-    fclose(usuario_arq);
-    if (start == -1) // Se o usuário digitou um ID inválido
-    {
-      printf("ID não encontrado\n");
-      return;
-    }
-  
-    if (end == 0) // Se o usuário for o último cadastrado, o fim será a última linha do arquivo (E não o próximo ID)
-      end = i;
-  
-    del_linhas(start, end-1, "usuarios.txt");
-  }
-  
-  return;
-}
-
 void cadastro_de_planos(struct Planos T[])
 {
   FILE *ponteiro_arquivo;
