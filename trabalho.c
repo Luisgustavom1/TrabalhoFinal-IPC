@@ -718,7 +718,6 @@ void menu()
     printf("\n8- Cadastrar um plano");
     printf("\n9- Mostrar Todos os usuarios cadastrados");
     printf("\n10- Mostrar 1 usuario");
-    printf("\n11- Excluir um cadastro");
     printf("\n0- Sair ");
     printf("\nDigite opcao: ");
     scanf("%d", &opcao);
@@ -746,11 +745,6 @@ void menu()
       printf("Digite o ID do cadastro a ser mostrado => ");
       scanf("%d", &ID);
       mostra_um_cadastro(ID);
-    }
-    if (opcao == 11) {
-      printf("Digite o ID do cadastro a ser excluído => ");
-      scanf("%d", &ID);
-      deleta_cadastro(ID);
     }
     if (opcao == 0)
       return;
