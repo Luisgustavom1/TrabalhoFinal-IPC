@@ -281,7 +281,7 @@ void mostra_um_cadastro(int ID)
 
   if (!autenticacao())
   {
-    if (f == NULL) // verificando se o arquivo existe ou nao
+    if (f == NULL) // verificando se o arquivo existe ou não
     {
       printf("Nenhum cadastro encontrado!\n");
       return;
