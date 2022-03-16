@@ -2,9 +2,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define TAMANHO_BUFFER 256
-#define MAX_LINHAS 64
-
 struct Planos
 {
   char nome_do_plano[100], quantidade_de_camas[10], refeicoes_no_hotel[6], ingressos_para_eventos[100], transporte_vip[10], quantidade_passagens[10], tipo_de_passagem[100], tamanho_do_quarto[100], quantidade_de_banheiros[10];
@@ -41,37 +38,6 @@ char *strrev(char *s)
   }
 
   return s;
-}
-
-// Deleta linhas de um arquivo. Uso: del_linha(número da 1ª linha a ser deletada, número da última linha a ser deletada, "nome do arquivo")
-void del_linhas(int linha_deletar, int fim_deletar, char *nome_arquivo)
-{
-  FILE *arq = fopen(nome_arquivo, "r");
-  char arq_linha[TAMANHO_BUFFER], arq_origin[TAMANHO_BUFFER * MAX_LINHAS];
-  int n_linhas=0, linha_atual=1, c=0, i;
-
-  for (i=0; i < TAMANHO_BUFFER * MAX_LINHAS; ++i)
-    arq_origin[i] = '\0'; // Mudar tudo para null para evitar bugs
-
-  while (fgets(arq_linha, TAMANHO_BUFFER, arq) != NULL)
-  {
-    strcat(arq_origin, arq_linha); // Transferindo o conteúdo do arquivo para o vetor "arquivo_original"
-    n_linhas++;
-  }
-
-  fclose(arq);
-  arq = fopen(nome_arquivo, "w"); // Apagar o conteúdo do arquivo
-
-  while (linha_atual <= n_linhas)
-  {
-    if ((linha_atual < linha_deletar) || (linha_atual > fim_deletar)) // Se a linha atual for igual às linhas que serão deletadas, nada será impresso
-      fprintf(arq, "%c", arq_origin[c]);
-    if (arq_origin[c] == '\n')
-      linha_atual++;
-    c++;
-  }
-  fclose(arq);
-  return;
 }
 
 int autenticacao()
@@ -210,10 +176,10 @@ void cadastro_de_cliente(struct Cliente T[])
       // Lendo último id usado
       fclose(f);
       f = fopen("usuarios.txt", "r");
-      char linha_atual[TAMANHO_BUFFER], *lixo;
-      int ultimoID=0;
+      char linha_atual[200], *lixo;
+      int ultimoID = 0;
 
-      while (fgets(linha_atual, TAMANHO_BUFFER, f) != NULL)
+      while (fgets(linha_atual, 200, f) != NULL)
         if (strstr(linha_atual, "ID: ")) // Se a linha conter "ID: "
           ultimoID = strtol(strrev(linha_atual), &lixo, 10);
       // A função strtol extrai o primeiro número de uma string se ele for a primeira coisa presente, então devolve o resto dela em *lixo. Para que o número seja a primeira coisa em "ID: %d", a função strrev escreverá a string de trás para frente, fazendo com que o número do ID ganhe evidência.
@@ -281,16 +247,16 @@ void mostra_um_cadastro(int ID)
 
   if (!autenticacao())
   {
-    if (f == NULL) // verificando se o arquivo existe ou não
+    if (f == NULL) // verificando se o arquivo existe ou nao
     {
       printf("Nenhum cadastro encontrado!\n");
       return;
     }
 
-    char linha_atual[TAMANHO_BUFFER], *lixo;
+    char linha_atual[200], *lixo;
     int ultimoID = 0;
 
-    while (fgets(linha_atual, TAMANHO_BUFFER, f) != NULL) // linha_atual= onde vai ser armaz a string lida; 200 = tam da string; f = arq lido
+    while (fgets(linha_atual, 200, f) != NULL) // linha_atual= onde vai ser armaz a string lida; 200 = tam da string; f = arq lido
     {
       if (strstr(linha_atual, "ID: ")) // Se a linha conter "ID: " // strstr (onde eu vou buscar, qual string eu quero buscar)
       {
@@ -304,41 +270,6 @@ void mostra_um_cadastro(int ID)
     }
     return;
   }
-}
-
-void deleta_cadastro(int ID)
-{
-  if (!autenticacao())
-  {
-    FILE *usuario_arq = fopen("usuarios.txt", "r");
-    char linha_atual[TAMANHO_BUFFER], *lixo;
-    int ultimoID=0, i=1, start=-1, end=0;
-  
-    while (fgets(linha_atual, TAMANHO_BUFFER, usuario_arq) != NULL)
-    {
-      if (strstr(linha_atual, "ID: ")) // Se a linha conter "ID: "
-        ultimoID = strtol(strrev(linha_atual), &lixo, 10);
-
-      if (ultimoID == ID && start == -1)
-        start=i;
-      if (ultimoID != ID && start > -1 && end == 0)
-        end=i;
-      i++;
-    }
-    fclose(usuario_arq);
-    if (start == -1) // Se o usuário digitou um ID inválido
-    {
-      printf("ID não encontrado\n");
-      return;
-    }
-  
-    if (end == 0) // Se o usuário for o último cadastrado, o fim será a última linha do arquivo (E não o próximo ID)
-      end = i;
-  
-    del_linhas(start, end-1, "usuarios.txt");
-  }
-  
-  return;
 }
 
 void cadastro_de_planos(struct Planos T[])
@@ -505,6 +436,8 @@ void mostrar_todos_os_planos(struct Planos T[])
 void eventos()
 {
   // Os eventos serão guardados em um arquivo para melhor organização
+  const int TAMANHO_BUFFER = 256; // Máximo de caracteres que podem ser inseridos por linha
+
   FILE *eventos = fopen("eventos", "r");
   if (eventos == NULL) // Caso o arquivo "eventos" não exista, criá-lo
     eventos = fopen("eventos", "w");
@@ -574,22 +507,39 @@ void eventos()
       // Todos os eventos serão listados com um número de referência na frente. O usuário digtará um número e o evento correspondente será excluído
       if (!autenticacao())
       {
-        int linha_deletar=-1, i=1; // i= número de linhas do arquivo
+        char arquivo_original[TAMANHO_BUFFER * 16]; // Funciona com até 16 linhas de eventos garantidamente, mude o número para suportar mais linhas
+        int linha_deletar, linha_atual, i, c;
+        for (i = 0; i < TAMANHO_BUFFER * 16; ++i)
+          arquivo_original[i] = '\0';
+        linha_atual = i = c = 0;
 
         rewind(eventos);
         while (fgets(eventos_contents, TAMANHO_BUFFER, eventos) != NULL)
         { // Imprimir todas as linhas com um número de referência na frente
           printf("%d | %s", i, eventos_contents);
+          strcat(arquivo_original, eventos_contents); // Transferindo o conteúdo do arquivo para o vetor "arquivo_original"
           i++;
         }
         printf("\n");
 
         printf("\nInsira o número do evento que será deletado => ");
-        setbuf(stdin, NULL);
-        while (linha_deletar >= i || linha_deletar <= 0) // Impedir que números fora do intervalo sejam escritos
+        linha_deletar = -1;
+        while (linha_deletar >= i || linha_deletar < 0) // Impedir que números fora do intervalo sejam escritos
           scanf("%d", &linha_deletar);
-        
-        del_linhas(linha_deletar, linha_deletar, "eventos");
+
+        fclose(eventos);
+        eventos = fopen("eventos", "w");
+        fclose(eventos); // Apagar o conteúdo do arquivo
+        eventos = fopen("eventos", "a");
+
+        while (linha_atual < i)
+        {
+          if (linha_atual != linha_deletar) // Se a linha atual for igual à linha que será deletada, nada será impresso
+            fprintf(eventos, "%c", arquivo_original[c]);
+          if (arquivo_original[c] == '\n')
+            linha_atual++;
+          c++;
+        }
       }
     }
 
@@ -753,7 +703,6 @@ void menu()
     printf("\n8- Cadastrar um plano");
     printf("\n9- Mostrar Todos os usuarios cadastrados");
     printf("\n10- Mostrar 1 usuario");
-    printf("\n11- Excluir um cadastro");
     printf("\n0- Sair ");
     printf("\nDigite opcao: ");
     scanf("%d", &opcao);
@@ -781,11 +730,6 @@ void menu()
       printf("Digite o ID do cadastro a ser mostrado => ");
       scanf("%d", &ID);
       mostra_um_cadastro(ID);
-    }
-    if (opcao == 11) {
-      printf("Digite o ID do cadastro a ser excluído => ");
-      scanf("%d", &ID);
-      deleta_cadastro(ID);
     }
     if (opcao == 0)
       return;
