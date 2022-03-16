@@ -210,12 +210,17 @@ void cadastro_de_cliente(struct Cliente T[])
       // Lendo último id usado
       fclose(f);
       f = fopen("usuarios.txt", "r");
-      char linha_atual[TAMANHO_BUFFER], *lixo;
+      char linha_atual[TAMANHO_BUFFER], *lixo, foo[3];
       int ultimoID=0;
 
       while (fgets(linha_atual, TAMANHO_BUFFER, f) != NULL)
         if (strstr(linha_atual, "ID: ")) // Se a linha conter "ID: "
-          ultimoID = strtol(strrev(linha_atual), &lixo, 10);
+        {
+          sprintf(foo,"%ld", strtol(strrev(linha_atual), &lixo, 10));
+          ultimoID = strtol(strrev(foo), &lixo, 10);
+          if (linha_atual[1] == '0') // Fix pq strtol salva o número "01" como "1" e assim por diante com números que começam com zero
+            ultimoID+= 10*ultimoID - ultimoID;
+        }
       // A função strtol extrai o primeiro número de uma string se ele for a primeira coisa presente, então devolve o resto dela em *lixo. Para que o número seja a primeira coisa em "ID: %d", a função strrev escreverá a string de trás para frente, fazendo com que o número do ID ganhe evidência.
 
       ultimoID++;
@@ -287,14 +292,17 @@ void mostra_um_cadastro(int ID)
       return;
     }
 
-    char linha_atual[TAMANHO_BUFFER], *lixo;
+    char linha_atual[TAMANHO_BUFFER], *lixo, foo[3];
     int ultimoID = 0;
 
     while (fgets(linha_atual, TAMANHO_BUFFER, f) != NULL) // linha_atual= onde vai ser armaz a string lida; 200 = tam da string; f = arq lido
     {
       if (strstr(linha_atual, "ID: ")) // Se a linha conter "ID: " // strstr (onde eu vou buscar, qual string eu quero buscar)
       {
-        ultimoID = strtol(strrev(linha_atual), &lixo, 10); // Explicação na função cadastro (tem exatamente a mesma coisa)
+        sprintf(foo,"%ld", strtol(strrev(linha_atual), &lixo, 10));
+        ultimoID = strtol(strrev(foo), &lixo, 10);
+        if (linha_atual[1] == '0')
+          ultimoID+= 10*ultimoID - ultimoID;
         strrev(linha_atual);
       }
       if (ultimoID == ID)
@@ -402,13 +410,18 @@ void cadastro_de_planos(struct Planos T[])
         // Lendo último id usado
         fclose(ponteiro_arquivo);
         ponteiro_arquivo = fopen("planos.txt", "r");
-        char linha_atual[200], *lixo;
+        char linha_atual[200], *lixo, foo[3];
         int ultimoID = 0;
 
         while (fgets(linha_atual, 200, ponteiro_arquivo) != NULL)
           if (strstr(linha_atual, "ID: ")) // Se a linha conter "ID: "
-            ultimoID = strtol(strrev(linha_atual), &lixo, 10);
-        // A função strtol extrai o primeiro número de uma string se ele for a primeira coisa presente, então devolve o resto dela em *lixo. Para que o número seja a primeira coisa em "ID: %d", a função strrev escreverá a string de trás para frente, fazendo com que o número do ID ganhe evidência.
+          {
+            // A função strtol extrai o primeiro número de uma string se ele for a primeira coisa presente, então devolve o resto dela em *lixo. Para que o número seja a primeira coisa em "ID: %d", a função strrev escreverá a string de trás para frente, fazendo com que o número do ID ganhe evidência.
+            sprintf(foo,"%ld", strtol(strrev(linha_atual), &lixo, 10));
+            ultimoID = strtol(strrev(foo), &lixo, 10);
+            if (linha_atual[1] == '0') // Fix pq strtol salva o número "01" como "1" e assim por diante com números que começam com zero
+              ultimoID+= 10*ultimoID - ultimoID;
+          }
 
         ultimoID++;
 
