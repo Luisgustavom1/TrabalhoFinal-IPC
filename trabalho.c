@@ -663,11 +663,121 @@ void mostra_feedbacks()
   return;
 }
 
-void mostra_contatos()
+void adiciona_contatos()
 {
-  printf("\nInstagram: new_horizon_resort_instagram\n");
-  printf("Gmail: new_horizon_resort@gmail.com\n");
-  printf("Telefone: (34)99877-0392\n");
+  
+  // Os eventos serão guardados em um arquivo para melhor organização
+  FILE *contatos = fopen("contatos.txt", "r");
+  if (contatos == NULL) // Caso o arquivo "eventos" não exista, criá-lo
+    contatos = fopen("contatos.txt", "w");
+  char eventos_contents[TAMANHO_BUFFER]; // Variável será usada para imprimir o conteúdo do arquivo "contatos"
+
+  int opcao;
+  while (1)
+  {
+    fclose(contatos);
+    contatos = fopen("contatos.txt", "r");
+    printf("\n");
+    while (fgets(eventos_contents, TAMANHO_BUFFER, contatos) != NULL) // Imprimir todas as linhas do arquivo eventos
+      printf("%s", eventos_contents);
+
+    rewind(contatos);
+    fseek(contatos, 0, SEEK_END);
+    if (ftell(contatos) == 0) // Se o arquivo estiver vazio, imprimir a mensagem:
+      printf("Nenhum contato foi encontrado\n");
+
+    // Menu de opções
+    printf("\nComandos:\n");
+    printf("Qualquer tecla - Recarregar contatos\n");
+    printf("1 - Criar um contatos\n");
+    if (ftell(contatos) != 0)
+    { // Opções só vão aparecer se existirem contatos
+      printf("2 - Remover um contatos\n");
+      printf("3 - Remover todos os contatos\n");
+    }
+    printf("0 - Voltar\n");
+
+    printf("Digite o número da opção => ");
+    setbuf(stdin, NULL); // Evitar que o código entre em loop
+    opcao = -1;          // Evitar erros caso o usuário não insira um número
+    scanf("%d", &opcao);
+    printf("\n");
+
+    if (opcao == 0)
+    {
+      fclose(contatos);
+      return;
+    }
+
+    if (opcao == 1)
+    { // Adicionar um evento
+      // O usuário ditará um evento por linha. Para que ele saia do modo de digitação, basta digitar "\sair".
+      if (!autenticacao())
+      {
+        fclose(contatos);
+        contatos = fopen("contatos.txt", "a");
+        char eventreg_text[TAMANHO_BUFFER];
+        eventreg_text[0] = '0'; // O while abaixo não executa se a string já for igual a "\sair". Esta linha corrige isso mudando 1 caractere da string
+        printf("Digite os eventos a serem adicionados, separando-os por uma quebra de linha\nAo concluir, digite \"\\sair\"\n");
+
+        while (strcmp(eventreg_text, "\\sair\n") != 0)
+        {
+          setbuf(stdin, NULL);
+          fgets(eventreg_text, TAMANHO_BUFFER, stdin);
+          if (strcmp(eventreg_text, "\\sair\n") != 0) // Impedir que a string "\sair" seja escrita no arquivo
+            fputs(eventreg_text, contatos);            // Vai lendo e já vai salvando no arquivo
+        }
+        printf("Os eventos foram gravados\n");
+      }
+    }
+
+    if (opcao == 2 && ftell(contatos) != 0)
+    { // Remover um evento
+      // Todos os eventos serão listados com um número de referência na frente. O usuário digtará um número e o evento correspondente será excluído
+      if (!autenticacao())
+      {
+        int linha_deletar=-1, i=1; // i= número de linhas do arquivo
+
+        rewind(contatos);
+        while (fgets(eventos_contents, TAMANHO_BUFFER, contatos) != NULL)
+        { // Imprimir todas as linhas com um número de referência na frente
+          printf("%d | %s", i, eventos_contents);
+          i++;
+        }
+        printf("\n");
+
+        printf("\nInsira o número do evento que será deletado => ");
+        setbuf(stdin, NULL);
+        while (linha_deletar >= i || linha_deletar <= 0) // Impedir que números fora do intervalo sejam escritos
+          scanf("%d", &linha_deletar);
+        
+        del_linhas(linha_deletar, linha_deletar, "contatos.txt");
+      }
+    }
+
+    if (opcao == 3 && ftell(contatos) != 0)
+    { // Remover todos os eventos
+      if (!autenticacao())
+      {
+        char confirm[3];
+        confirm[0] = '\0'; // Evitar que o while não seja executado na segunda vez que a opção é selecionada
+        printf("Tem certeza que deseja remover todos os eventos? (Esta ação é definitiva)\n");
+        while (strcmp(confirm, "sim") && strcmp(confirm, "nao"))
+        {
+          printf("Digite \"sim\" ou \"nao\" => ");
+          scanf("%s", confirm);
+        }
+        if (strcmp(confirm, "sim") == 0)
+        {
+          fclose(contatos);
+          contatos = fopen("contatos.txt", "w");
+        }
+        else
+          printf("Operação cancelada\n");
+      }
+    }
+  }
+
 }
 
 void perguntas_frequentes()
@@ -745,8 +855,8 @@ void menu()
       coleta_feedback();
     if (opcao == 5)
       mostra_feedbacks();
-    if (opcao == 6)
-      mostra_contatos();
+    /* if (opcao == 6) */
+    /*   mostra_contatos(); */
     if (opcao == 7)
       perguntas_frequentes();
     if (opcao == 8)
@@ -758,6 +868,9 @@ void menu()
       printf("Digite o ID do cadastro a ser mostrado => ");
       scanf("%d", &ID);
       mostra_um_cadastro(ID);
+    }
+    if (opcao == 11) {
+      adiciona_contatos();
     }
     if (opcao == 0)
       return;
